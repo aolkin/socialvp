@@ -5,6 +5,10 @@
 .\#*
 
 
+###
+logs
+*.pid
+
 
 ### Partial Python.gitignore from github
 
