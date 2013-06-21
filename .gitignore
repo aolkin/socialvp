@@ -9,6 +9,8 @@
 ### Partial Python.gitignore from github
 
 *.py[cod]
+*.pyc
+*.pyo
 
 # C extensions
 *.so
