@@ -1,0 +1,63 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{verbdef}
+\usepackage{upquote}
+\frenchspacing
+
+\verbdef{\tttype}{"type"}
+\verbdef{\ttmessage}{"message"}
+\verbdef{\outcome}{"type" `outcome'}
+
+\renewcommand{\abstractname}{Background on WebSockets}
+
+\begin{document}
+
+\title{WSChat WebSocket Protocol\\for the SocialVP}
+\author{Aaron Olkin}
+\maketitle
+\vfill
+\begin{abstract}
+The SVP needs a framework for providing enhanced chat functionality, and since WebSockets are so cool, new, and useful, it uses them. WebSockets provide asynchronous full duplex communication between a web browser and a server, allowing either side to send events without anything from the other end. This means that clients can recieve messages sent by other clients without any form of server polling, just one long-running connection.
+\end{abstract}
+\clearpage
+
+\section{Introduction}
+The SVP Project uses the websocket protocol to implement an enhanced chat room interface for watching a video together across the internet. It works by exchanging JSON objects with the server, which then distributes them to the appropriate client. The server actually has very little part, since the WebSocket server performs very little management beyond connection housekeeping. In this way, most of the functionality is client-side javascript exchanging whatever messages it wants to.
+
+As a convention in this manual, monospace text refers to literal dictionary key or value names. Further, double quotes (\texttt{"}) refers to a dictionary key, while a single quoted (\texttt{`}) string is a literal value.
+
+\section{Usage}
+Everything sent to the server should be a JSON encoded dictionary with a \texttt{"command"} field and possibly others depending on the command. Responses from the server will always at least have a \tttype  field.
+
+\subsection{Establishing a Connection}
+Upon creation of a websocket pointing to the websocket server, your client should recieve a message of \texttt{"type" `init'} with a welcome \ttmessage. You may safely ignore this message, as long as you follow the rest of the protocol.
+
+In order to send and recieve further, you must identify yourself with a nickname. Any non-identification commands sent before identifying will result in you recieving a dictionary of \outcome  with an error message warning you to identify. To identify, send an identification command. The \texttt{"command"} field value here should be \texttt{`identify'}, and there should be another field, \texttt{"name"}, specifying the name you wish your client to use and be contacted by. After sending this, you should recieve a message of \outcome either with \texttt{"success"} set to \texttt{True} or \texttt{False} depending on whether that name was successfully claimed for you. Either way, you will also get an informational \ttmessage.
+
+
+\subsection{Sending Messages}
+Once a connection is established and you have identified yourself, you may begin sending messages. The server only acts as a broker between several clients. It does not care what data is being exchanged at all, so clients are free to send and recieve whatever ``messages'' they want, and the other clients must deal with parsing whatever data is sent their way.
+
+The server accepts two \texttt{"command"}s for sending messages, \texttt{`broadcast'} and \texttt{`message'}. \texttt{`broadcast'} sends the \ttmessage to all other identified clients who are connected to the server. \texttt{`message'} sends the \ttmessage to the client specified in the \texttt{"to"} field of the request. If no client with that name is connected to the server, it send a message of \outcome  with \texttt{"success"}  set to \texttt{False}  and a descriptive error \ttmessage.
+
+\subsection{Recieving Messages}
+When another connected client sends a \texttt{`broadcast'}, all other clients recieve a message of \texttt{"type" `broadcast'} with a \texttt{"from"} field set to the name of the client who sent the broadcast. They also recieve the \ttmessage  payload sent in the broadcast in a \ttmessage field.
+
+When a client sends a message of \texttt{"type" `message'}, the client whose name is specified in the message's \texttt{"to"} field will recieve a message of \texttt{"type" `message'}. This message will also have a \texttt{"from"} field containing the sender's name, as well as a \ttmessage  field containing the sent message.
+
+Messages of \outcome  should only be recieved in response to commands sent by the client, telling whether the requested action was successful or not, and why.
+
+%\clearpage
+
+\section{\texttt{`outcome'} Message ``Codes''}
+\begin{description}
+  \item[10] \textbf{\textit{``Please identify yourself''}} \\
+    This code is sent when a client tries to use a command before identifying with a name.
+  \item[300] \textbf{\textit{``Indentified successfully!''}} \\
+    This code is sent with a \texttt{True "success"} field, indicating that the name used to identify is unique and was accepted.
+  \item[305] \textbf{\textit{``Client with that name already exists!''}} \\
+    This code is sent after attempting to identify when the client has chosen a name that is already taken. A client recieving this code should \texttt{identify} again using a different name.
+  \item[404] \textbf{\textit{``No client with that name is currently connected!''}} \\
+    This code is sent after a client tries to \texttt{message} another, but the client they tried to message does not exist or is not currently connected to the server.
+\end{description}
+
+\end{document}
