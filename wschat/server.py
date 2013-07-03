@@ -51,8 +51,16 @@ class WSHandler(websocket.WebSocketHandler):
     def on_close(self):
         del ws[self.name]
     
+staticpath = "static"
+while not os.path.isdir(staticpath):
+    staticpath = "../"+staticpath
+    if len(staticpath.split("/") > 6):
+        raise IOError("Static files directory not found! (reached search limit)")
 
-app = web.Application([(r'/.*',WSHandler)])
+app = web.Application([
+        (r'/()', web.StaticFileHandler, {"path":staticpath+"/index.html"}),
+        (r'/wschat',WSHandler),
+        (r'/(.+)', web.StaticFileHandler, {"path":staticpath})])
 
 
 def main():

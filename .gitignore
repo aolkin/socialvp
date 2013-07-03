@@ -1,4 +1,6 @@
 
+*.zip
+
 # Emacs ignores
 *~
 \#*\#
@@ -8,6 +10,7 @@
 ###
 logs
 *.pid
+*.log
 
 
 ### Partial Python.gitignore from github
