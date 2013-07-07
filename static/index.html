@@ -5,44 +5,132 @@
     <title>SocialVideoPlayer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <style>
-      body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-      }
-    </style>
+    <link href="css/bootstrap-theme/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+    <link href="css/my.css" rel="stylesheet">
   </head>
 
   <body>
 
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar navbar-inverse navbar-fluid-top">
       <div class="navbar-inner">
-        <div class="container">
+        <div class="container-fluid">
           <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="#">Project name</a>
-          <div class="nav-collapse collapse">
+          <a class="brand" href="#">Social Video Player</a>
+          <div class="nav-collapse collapse pull-right">
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li><a href="/" onclick="sessionStorage.removeItem('svpUsername')">
+		  Reset Name</a></li>
+              <li><a href="#load-video-modal" data-toggle="modal">Load New Video</a></li>
+              <li><a href="#get-link-modal" data-toggle="modal">Get Link to Share</a></li>
             </ul>
-          </div><!--/.nav-collapse -->
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="container">
+    <div class="container-fluid hide fade in">
+      <div class="row-fluid">
+	<div class="span8">
+	  <video width="100%" src="" id="player"><p class="text-error"><i class="icon-warning-sign"></i>
+	      Sorry, your browser does not support this app!</p></video><br />
+	  <div class="row-fluid">
+	    <div class="span1">
+	      <button class="btn" id="playpause"><i class="icon-play"></i></button>
+	    </div>
+	    <div class="span1 time time-past">00:00:00</div>
+	    <div class="span8">
+	      <div id="timeline" style="width:100%"></div>
+	    </div>
+	    <div class="span1 time time-remaining">-00:00:00</div>
+	    <div class="span1">
+	      <button class="btn pull-right"><i class="icon-volume-up"></i></button>
+	      <div id="volume" style="height:100px;"></div>
+	    </div>
+	  </div>
+	  <div class="row-fluid">
+	    <div class="span4">
+	    </div>
+	    <div class="span8" id="chat-frame">
+	    </div>
+	  </div>
+	</div>
+	<div class="span4">
+	  <div id="info" class="well">
+	    <div class="progress">
+	      <div class="bar" id="global-pos" style="width: 0%;"></div></div>
+	    <div id="current-url"><a href="" target="_blank"></a></div>
+	    <div class="alert hide fade in alert-error">
+	      <span></span>
+	      <a href="#" class="close" data-dismiss="alert">&times;</a>
+	    </div>
+	    <div class="alert hide fade in alert-warning">
+	      <span></span>
+	      <a href="#" class="close" data-dismiss="alert">&times;</a>
+	    </div>
+	    <div class="alert hide fade in alert-success">
+	      <span></span>
+	      <a href="#" class="close" data-dismiss="alert">&times;</a>
+	    </div>
+	    <div class="alert hide fade in alert-info">
+	      <span></span>
+	      <a href="#" class="close" data-dismiss="alert">&times;</a>
+	    </div>
+	  </div>
+	  <ul id="watchers" class="unstyled well">
+	    <h3>Viewers <span class="badge badge-info">0</span></h3>
+	  </ul>
+	</div>
+      </div>
+    </div>
 
-      <h1>Bootstrap starter template</h1>
-      <p>Use this document as a way to quick start any new project.<br> All you get is this message and a barebones HTML document.</p>
+    <div id="load-video-modal" class="modal fade" data-show="true" tabindex="-1">
+      <div class="modal-header">
+	<button class="close" data-dismiss="modal">&times;</button>
+	<h3>Load a New Video</h3>
+      </div>
+      <div class="modal-body" style="min-height: 200px;">
+	<input id="video-url" type="url" placeholder="http://www.example.com/media/video.mp4" />
+      </div>
+      <div class="modal-footer">
+	<button class="btn btn-info" data-dismiss="modal">Open</button>
+      </div>
+    </div>
 
-    </div> <!-- /container -->
+    <div id="set-name-modal" class="modal fade" tabindex="-1">
+      <div class="modal-header">
+	<h3>Set Username</h3>
+      </div>
+      <div class="modal-body" style="min-height: 100px;">
+	<input id="nickname" type="text" placeholder="johndoe" />
+      </div>
+      <div class="modal-footer">
+	<button class="btn btn-info">Use</button>
+      </div>
+    </div>
+
+    <div id="get-link-modal" class="modal fade" tabindex="-1">
+      <div class="modal-header">
+	<button class="close" data-dismiss="modal">&times;</button>
+	<h3>Video Sharing Link</h3>
+      </div>
+      <div class="modal-body" style="min-height: 100px;">
+	<input id="link" type="text" readonly="readonly" />
+      </div>
+      <div class="modal-footer">
+	<button class="btn btn-info" data-dismiss="modal">Okay</button>
+      </div>
+    </div>
 
     <script src="//code.jquery.com/jquery-2.0.0.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.3.no-tooltip.min.js"></script>
+    <script src="js/moment.min.js"></script>
+    <script src="js/wschat.js"></script>
+    <script src="js/my.js"></script>
 
   </body>
 </html>

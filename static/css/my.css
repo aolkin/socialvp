@@ -1,0 +1,64 @@
+.blackbg, .blackbg .ui-widget-content .ui-state-default, .blackbg .ui-slider .ui-slider-range {
+    background-color: #000000;
+    background-image: none;
+}
+.well.blackbg {
+    border: 1px solid #333333;
+}
+
+.row-fluid .time.time-past {
+    margin-left: 1%; margin-right: 1.127659574468085%; }
+
+#player {
+    box-shadow: 0 0 6px 2px black;
+    cursor: pointer;
+}
+
+#current-url a {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-top: -10px;
+    display: block;
+}
+
+.modal-body input { width: 90%; }
+#link { cursor: text; }
+
+#watchers h3 .badge {
+    vertical-align: middle;
+}
+
+.span8 .row-fluid .span1.time {
+    margin-top: 5px;
+}
+.span8 .row-fluid .span8 {
+    margin-top: 10px;
+}
+#timeline .ui-slider-range {
+    width: 100%;
+}
+
+.span4 .well {
+    margin-top: 2em;
+}
+
+.span4 .well h3 {
+    text-align: center;
+    margin-top: -0.5em;
+}
+
+#watchers .dropdown-menu {
+    min-width: 100%;
+}
+.time {
+    text-align: center;
+}
+#watchers .actions {
+    margin-top: -2px;
+}
+.watcher {
+    border-radius: 4px;
+    padding: 1em 1em 0.5em;
+    margin: 8px -1em;
+    box-shadow: 0 0 8px -2px inset, 0 0 1px 1px;
+}
