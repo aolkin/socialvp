@@ -7,8 +7,9 @@ CODES = {
     10:"Please identify yourself!",
     300:"Identified successfully!",
     305:"Client with that name already exists!",
+    400:"Missing required request field!",
     404:"No client with that name is currently connected!"
-    }
+}
 
 def outcome(successful,code,message=None):
     if code and not message:
@@ -24,6 +25,13 @@ class WSList(web.RequestHandler):
         self.write("WebSockets printed to stdout")
 
 class WSHandler(websocket.WebSocketHandler):
+    def checkattr(self,obj,attr):
+        if attr in obj:
+            return True
+        else:
+            self.write_message(outcome(False,400,"Missing '{}' field!".format(attr)))
+            return False
+
     def open(self):
         time.sleep(0.5)
         self.write_message(json.dumps({"type":"init","message":"Please identify to recieve messages."}))
@@ -31,7 +39,9 @@ class WSHandler(websocket.WebSocketHandler):
     def on_message(self,message):
         sys.stdout.flush();sys.stderr.flush();
         obj = json.loads(message)
+        if not self.checkattr(obj,"command"): return None
         if obj["command"] == "identify":
+            if not self.checkattr(obj,"name"): return None
             print("Joining: {} [Current Clients: {}]".format(obj["name"],",".join(ws.keys())))
             if obj["name"] in ws:
                 self.write_message(outcome(False,305))
@@ -42,12 +52,15 @@ class WSHandler(websocket.WebSocketHandler):
         elif not hasattr(self,"name"):
             self.write_message(outcome(False,10))
         elif obj["command"] == "broadcast":
+            if not self.checkattr(obj,"message"): return None
             for i in ws:
                 if i != self.name:
                     ws[i].write_message(json.dumps({'type':'broadcast',
                                                     'from':self.name,
                                                     'message':obj["message"]}))
         elif obj["command"] == "message":
+            if not self.checkattr(obj,"message"): return None
+            if not self.checkattr(obj,"to"): return None
             to = ws.get(obj["to"])
             if not to:
                 self.write_message(outcome(False,404))

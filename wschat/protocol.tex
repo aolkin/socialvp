@@ -56,6 +56,8 @@ Messages of \outcome  should only be recieved in response to commands sent by th
     This code is sent with a \texttt{True "success"} field, indicating that the name used to identify is unique and was accepted.
   \item[305] \textbf{\textit{``Client with that name already exists!''}} \\
     This code is sent after attempting to identify when the client has chosen a name that is already taken. A client recieving this code should \texttt{identify} again using a different name.
+  \item[400] \textbf{\textit{``Missing required request field!''}} \\
+    This code is sent when a client sends a \texttt{message} to the server, but is missing the \texttt{"command"} field or a field required by that command.
   \item[404] \textbf{\textit{``No client with that name is currently connected!''}} \\
     This code is sent after a client tries to \texttt{message} another, but the client they tried to message does not exist or is not currently connected to the server.
 \end{description}

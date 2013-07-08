@@ -63,22 +63,6 @@
 	    <div class="progress">
 	      <div class="bar" id="global-pos" style="width: 0%;"></div></div>
 	    <div id="current-url"><a href="" target="_blank"></a></div>
-	    <div class="alert hide fade in alert-error">
-	      <span></span>
-	      <a href="#" class="close" data-dismiss="alert">&times;</a>
-	    </div>
-	    <div class="alert hide fade in alert-warning">
-	      <span></span>
-	      <a href="#" class="close" data-dismiss="alert">&times;</a>
-	    </div>
-	    <div class="alert hide fade in alert-success">
-	      <span></span>
-	      <a href="#" class="close" data-dismiss="alert">&times;</a>
-	    </div>
-	    <div class="alert hide fade in alert-info">
-	      <span></span>
-	      <a href="#" class="close" data-dismiss="alert">&times;</a>
-	    </div>
 	  </div>
 	  <ul id="watchers" class="unstyled well">
 	    <h3>Viewers <span class="badge badge-info">0</span></h3>
@@ -105,7 +89,11 @@
 	<h3>Set Username</h3>
       </div>
       <div class="modal-body" style="min-height: 100px;">
-	<input id="nickname" type="text" placeholder="johndoe" />
+	<div class="alert hide fade in alert-error">
+	  <a href="#" class="close" data-dismiss="alert">&times;</a>
+	  <span></span>
+	</div>
+	<input id="nickname" type="text" placeholder="nickname" />
       </div>
       <div class="modal-footer">
 	<button class="btn btn-info">Use</button>

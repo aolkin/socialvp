@@ -31,7 +31,10 @@ svp.loadUrls = function(query, process) {
 	cache: false,
 	dataType: "json"
     }).done(function(data,status,xhr){
-	process(data); });
+	process(data);
+    }).fail(function(xhr,error){
+	console.log("Typeahead XHR Error:",error);
+    });
 }
 $("#video-url").typeahead({source:svp.loadUrls});
 
@@ -163,7 +166,8 @@ $(function(){
 
     blackbg = "body, .well, .progress";
     svp.resetPlayState = function() {
-	$("#playpause i").toggleClass("icon-play icon-pause");
+	$("#playpause i").removeClass("icon-pause");
+	$("#playpause i").addClass("icon-play");
 	$("#info .progress").removeClass("progress-striped active");
 	/* Turn on the lights... */
 	$(blackbg).removeClass("blackbg");
@@ -185,25 +189,31 @@ $(function(){
 	    svp.lightsOff();
 	    svp.player.play();
 	    $("#info .progress").addClass("progress-striped active");
-	    $("#playpause i").addClass("icon-pause");
+	    $("#playpause i").toggleClass("icon-pause icon-play");
 	} else {
 	    svp.player.pause();
-	    $("#playpause i").addClass("icon-play");
 	}
     });
 
     svp.player = $("#player").get(0);
     svp.player.addEventListener("timeupdate",syncPos);
-    svp.player.addEventListener("ended",svp.resetPlayState());
+    svp.player.addEventListener("ended",svp.resetPlayState);
 
     function init(name) {
 	sessionStorage.svpUsername = name
-	    $("#load-video-modal").modal('show');
+	$("#load-video-modal").modal('show');
+	svp.ws = WSChat();
 	if (location.hash.substr(1,5) == "join:") {
 	    $("#load-video-modal").modal('hide');
-	} else {
-	    
+	    svp.ws.onconnected = function(e) {
+		svp.ws.broadcast({type:"join",id:location.hash.substr(6)}); }
 	}
+	svp.ws.onerror = function(code,message) {
+	    console.log(code,message);
+	    location.assign("#error:nameexists");
+	    location.reload();
+	}
+	svp.ws.init("ws://"+location.host+"/wschat",name);
     }
     $("#get-link-modal").modal("show").modal("hide");
     $("#set-name-modal").modal({
@@ -212,7 +222,16 @@ $(function(){
 	show: true
     }).modal('show');
     
-    if (sessionStorage.svpUsername) {
+    if (location.hash.substr(1,10) == "error:name") {
+	$("#nickname").val(sessionStorage.svpUsername);
+	textel = $("#set-name-modal .alert-error").removeClass("hide").children("span");
+	error = location.hash.substr(7);
+	if (error == "nameexists") {
+	    textel.html("Someone with that username is already connected to the server!<br>Please use a different username.");
+	} else {
+	    textel.html("A Username error occured! Please try again.");
+	}
+    } else if (sessionStorage.svpUsername) {
 	$("#set-name-modal").modal('hide');
 	init(sessionStorage.svpUsername);
     }
