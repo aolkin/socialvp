@@ -17,18 +17,26 @@ def outcome(successful,code,message=None):
 
 ws = {}
 
+class WSList(web.RequestHandler):
+    def get(self):
+        print(ws.keys())
+        sys.stdout.flush();sys.stderr.flush();
+        self.write("WebSockets printed to stdout")
+
 class WSHandler(websocket.WebSocketHandler):
     def open(self):
         time.sleep(0.5)
         self.write_message(json.dumps({"type":"init","message":"Please identify to recieve messages."}))
 
     def on_message(self,message):
+        sys.stdout.flush();sys.stderr.flush();
         obj = json.loads(message)
         if obj["command"] == "identify":
-            self.name = obj["name"]
-            if ws.get(self.name):
+            print("Joining: {} [Current Clients: {}]".format(obj["name"],",".join(ws.keys())))
+            if obj["name"] in ws:
                 self.write_message(outcome(False,305))
             else:
+                self.name = obj["name"]
                 ws[self.name] = self
                 self.write_message(outcome(True,300))
         elif not hasattr(self,"name"):
@@ -49,7 +57,8 @@ class WSHandler(websocket.WebSocketHandler):
                                              'message':obj["message"]}))
 
     def on_close(self):
-        del ws[self.name]
+        if hasattr(self,"name"):
+            del ws[self.name]
     
 staticpath = "static"
 while not os.path.isdir(staticpath):
@@ -60,6 +69,7 @@ while not os.path.isdir(staticpath):
 app = web.Application([
         (r'/()', web.StaticFileHandler, {"path":staticpath+"/index.html"}),
         (r'/wschat',WSHandler),
+        (r'/wslist',WSList),
         (r'/(.+)', web.StaticFileHandler, {"path":staticpath})])
 
 
@@ -101,6 +111,7 @@ def main():
     fd.write("{}".format(os.getpid()))
     fd.close()
 
+    sys.stdout.flush();sys.stderr.flush();
     app.listen(port,host)
     ioloop.IOLoop.instance().start()
 
