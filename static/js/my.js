@@ -76,6 +76,7 @@ $(function(){
 	    $(el).text(texts[index]);
 	});
 	$("#timeline").slider("option",{ min: times[0], max: times[1] });
+	svp.ws.broadcast({type:"timeupdate", pos:svp.watchers[0].pos, id:svp.video.id});
 	syncAllPos();
     }
 
@@ -114,47 +115,55 @@ $(function(){
 	    }
 	});
 	$("#timeline").children("a").each(function(index,el){
-	    $(el).attr("title",svp.watchers[index].name).attr("data-toggle","tooltip").tooltip()
-		.css("background-color",svp.watchers[index].color).css("background-image","none");
+	    node = $(el).attr("title",svp.watchers[index].name).attr("data-toggle","tooltip")
+		.tooltip().css("background-color",svp.watchers[index].color)
+		.css("background-image","none").css("opacity",(svp.watchers[index].hidden?
+							       0.2:1));
 	});
     }
     svp.rebuildTimeline = rebuildTimeline;
 
     function addWatcher(watcher) {
-	svp.watchers.push(watcher);
+	index = svp.watcherIndices[watcher.name] = svp.watchers.push(watcher)-1;
 	colorstyles = watcher.color?' style="background-color:'+watcher.color+';'+
 	    'color:'+complementHex(watcher.color.substr(1))+'"':"";
 	$('<li class="watcher you row-fluid"'+colorstyles+'>'+
           '<div class="span4 name">'+watcher.name+'</div>'+
           '<div class="span4 time">Loading...</div>'+
-	  '<div class="span4 actions btn-group">'+
-          '<a class="btn btn-small dropdown-toggle pull-right" data-toggle="dropdown" href="#">'+
-          'Actions <span class="caret"></span></a>'+
-          '<ul class="dropdown-menu">'+
-          '<!--<li><a href="#'+watcher.name+':kick">Kick</a></li>-->'+
-          '</ul></div></li>').appendTo("#watchers");
+	  '<div class="span4 actions">'+
+          '<a href="#" class="watcher-hide btn pull-right">Darken</a>'+
+          '</div></li>').appendTo("#watchers");
+	$("a.watcher-hide").eq(index).click(function(e){
+	    e.preventDefault();
+	    index = $(this).data("watcher-index");
+	    $(this).parent().toggleClass("active")
+	    $(".watcher").eq(index).toggleClass("hidden-watcher");
+	    svp.watchers[index].hidden = !svp.watchers[index].hidden;
+	    svp.rebuildTimeline();
+	}).data("watcher-index",index);
 	rebuildTimeline()
 	$("#watchers h3 .badge-info").text(svp.watchers.length);
     }
     svp.addWatcher = addWatcher;
     
-    $("#load-video-modal .modal-footer .btn-info").click(function(e) {
+    function loadVideo(url,id) {
 	video = {};
-	video.url = $("#video-url").val();
-	video.id = hashRandom(video.url).toString(36);
+	video.url = url;
+	video.id = id?id:hashRandom(video.url).toString(36);
 	if (video.id == "0") {
-	    e.preventDefault();
 	    return false; }
 	try {
-	    $(".container-fluid.hide").show();
+	    $(".container-fluid.hide").removeClass("hide").show();
 	    $("#volume").show()
 		.position({"my":"center bottom","at":"center","of":$("#volume").prev()}).hide();
 	} catch (err) {}
 	svp.video = video;
 	svp.watchers = [];
+	svp.watcherIndices = {};
 	$("#link").val(location.origin+"/#join:"+svp.video.id);
 	$(".watcher").remove()
 	$("#player").attr("src",svp.video.url);
+	svp.player.load();
 	$("#current-url a").attr("href",svp.video.url).text(svp.video.url).click(
 	    function(e){ e.preventDefault(); });
 	svp.addWatcher({
@@ -162,22 +171,28 @@ $(function(){
 	    pos: 0,
 	    color: null
 	});
+	return true;
+    }
+    svp.loadVideo = loadVideo;
+    $("#load-video-modal .modal-footer .btn-info").click(function(e) {
+	if (!svp.loadVideo($("#video-url").val())) {
+	    e.preventDefault(); }
     });
 
-    blackbg = "body, .well, .progress";
+    blackbg = "body, .well, .progress, #chat-frame, #chat-entry";
     svp.resetPlayState = function() {
 	$("#playpause i").removeClass("icon-pause");
 	$("#playpause i").addClass("icon-play");
 	$("#info .progress").removeClass("progress-striped active");
 	/* Turn on the lights... */
-	$(blackbg).removeClass("blackbg");
+	$(blackbg).removeClass("blackbg muted");
 	$(".btn").removeClass("btn-inverse");
 	$(".btn i").removeClass("icon-white");
 	/* --- */
     }
     svp.lightsOff = function() {
 	/* Turn out the lights... */
-	$(blackbg).addClass("blackbg");
+	$(blackbg).addClass("blackbg muted");
 	$(".btn").addClass("btn-inverse");
 	$(".btn i").addClass("icon-white");
 	/* --- */
@@ -199,22 +214,78 @@ $(function(){
     svp.player.addEventListener("timeupdate",syncPos);
     svp.player.addEventListener("ended",svp.resetPlayState);
 
-    function init(name) {
-	sessionStorage.svpUsername = name
-	$("#load-video-modal").modal('show');
-	svp.ws = WSChat();
-	if (location.hash.substr(1,5) == "join:") {
-	    $("#load-video-modal").modal('hide');
-	    svp.ws.onconnected = function(e) {
-		svp.ws.broadcast({type:"join",id:location.hash.substr(6)}); }
-	}
-	svp.ws.onerror = function(code,message) {
-	    console.log(code,message);
+    svp.ws = WSChat();
+    svp.ws.onerror = function(code,message) {
+	console.log(code,message);
+	if (code == 305) {
 	    location.assign("#error:nameexists");
 	    location.reload();
 	}
+    };
+    svp.ws.onmessage = function(data,from,e) {
+	if (data.type == "info") {
+	    if (!svp.video || svp.video.url !== data.url) {
+		svp.player.addEventListener("canplay",function() {
+		    console.log("Canplay");
+		    svp.player.currentTime = data.mypos; });
+		svp.loadVideo(data.url,svp.joinid);
+		if (!data.paused) {
+		    $("#playpause").click(); }
+	    }
+	    if (!(name in svp.watcherIndices)) {
+		addWatcher({
+		    name: from,
+		    pos: data.mypos,
+		    color: randomColor()
+		});
+	    }
+	}
+    };
+    svp.ws.onbroadcast = function(data,from,e) {
+	if (data.id != ((svp.video&&svp.video.id)?svp.video.id:svp.joinid)) { return false; }
+	if (data.type == "join") {
+	    svp.ws.message({
+		type: "info",
+		url: svp.video.url,
+		id: svp.video.id,
+		paused: svp.player.paused,
+		mypos: svp.watchers[0].pos
+	    },from);
+	    if (!(from in svp.watcherIndices)) {
+		svp.addWatcher({
+		    name: from,
+		    pos: 0,
+		    color: randomColor()
+		});
+	    }
+	} else if (data.type == "timeupdate") {
+	    svp.watchers[svp.watcherIndices[from]].pos = data.pos;
+	    syncAllPos();
+	}
+    };
+
+    function watcherExists(name) {
+	for (i in svp.watchers) {
+	    if (i !== "length") {
+		if (svp.watchers[i].name == name) {
+		    return true;
+		}
+	    }
+	}
+    }
+
+    function init(name) {
+	sessionStorage.svpUsername = name
+	$("#load-video-modal").modal('show');
+	if (location.hash.substr(1,5) == "join:") {
+	    $("#load-video-modal").modal('hide');
+	    svp.ws.onconnected = function(e) {
+		svp.joinid = location.hash.substr(6);
+		svp.ws.broadcast({type:"join",id:svp.joinid}); }
+	}
 	svp.ws.init("ws://"+location.host+"/wschat",name);
     }
+    svp.initializeClient = init;
     $("#get-link-modal").modal("show").modal("hide");
     $("#set-name-modal").modal({
 	backdrop: "static",

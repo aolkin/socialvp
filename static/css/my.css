@@ -62,3 +62,23 @@
     margin: 8px -1em;
     box-shadow: 0 0 8px -2px inset, 0 0 1px 1px;
 }
+
+.hidden-watcher {
+    opacity: 0.5;
+}
+
+/** Chat box styles */
+#chat-frame {
+    position: relative;
+    top: auto; left: auto;
+    margin: 2em auto;
+}
+#chat-frame.blackbg {
+    box-shadow: 0 0 7px rgba(255, 255, 255, 0.3);
+}
+#chat-messages {
+    min-height: 160px;
+    height: 40%;
+}
+
+/* --- */

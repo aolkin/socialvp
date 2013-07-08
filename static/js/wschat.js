@@ -3,6 +3,7 @@ WSChat = function() {
     return {
 	retries: 0,
 	closed: true,
+	log: false,
 	init: function(url,name,noretry) {
 	    if (!this.closed) {
 		return false; }
@@ -13,12 +14,13 @@ WSChat = function() {
 	    this.socket = new WebSocket(url);
 	    this.socket.wschat = this;
 	    this.socket.onopen = function(e){
+		this.wschat.retries = 0;
 		this.wschat.closed = false;
 	    };
 	    this.socket.onmessage = function(e){
 		ws = this.wschat;
 		data = JSON.parse(e.data);
-		console.log(data);
+		if (ws.log) { console.log(data); }
 		if (data.type == "init") {
 		    ws.send({command:"identify",name:ws.name});
 		} else if (data.type == "outcome") {
@@ -33,8 +35,10 @@ WSChat = function() {
 		    } else if (data.code == 404) {
 			ws.onerror(data.code,data.message,ws.lastmessage);
 		    }
-		} else {
-		    ws.onmessage(e,e.data);
+		} else if (data.type == "broadcast") {
+		    ws.onbroadcast(data.message,data.from,e);
+		} else if (data.type == "message") {
+		    ws.onmessage(data.message,data.from,e);
 		}
 	    };
 	    this.socket.onerror = function(e){
@@ -45,14 +49,16 @@ WSChat = function() {
 		ws = this.wschat;
 		ws.closed = true;
 		ws.onclose(e);
-		if (!ws.noretry && ws.retries < 5) {
+		if (!ws.noretry) {
 		    ws.retries += 1;
-		    ws.init(ws.url,ws.name);
+		    setTimeout(function() {
+			ws.init(ws.url,ws.name);
+		    },Math.pow(2,ws.retries));
 		}
 	    };
 	},
 	message: function(message,to) {
-	    this.send({"command":"broadcast","message":message,"to":to})
+	    this.send({"command":"message","message":message,"to":to})
 	},
 	broadcast: function(message) {
 	    this.send({"command":"broadcast","message":message})
@@ -67,6 +73,7 @@ WSChat = function() {
 	    this.socket.close();
 	},
 	onmessage: function(){},
+	onbroadcast: function(){},
 	onerror: function(){},
 	onwserror: function(){},
 	onclose: function(){},

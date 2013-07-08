@@ -19,7 +19,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="#">Social Video Player</a>
+          <a class="brand" href="javascript:location.reload();">Social Video Player</a>
           <div class="nav-collapse collapse pull-right">
             <ul class="nav">
               <li><a href="/" onclick="sessionStorage.removeItem('svpUsername')">
@@ -52,9 +52,13 @@
 	    </div>
 	  </div>
 	  <div class="row-fluid">
-	    <div class="span4">
-	    </div>
-	    <div class="span8" id="chat-frame">
+	    <div class="span12 modal" id="chat-frame">
+	      <div class="modal-header"><h3>Chat</h3></div>
+	      <div id="chat-messages" class="modal-body">
+	      </div>
+	      <div id="chat-entry" class="modal-footer">
+		<input type="text" id="chat-input" />
+	      </div>
 	    </div>
 	  </div>
 	</div>
