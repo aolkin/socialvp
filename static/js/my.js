@@ -120,6 +120,7 @@ $(function(){
 		.css("background-image","none").css("opacity",(svp.watchers[index].hidden?
 							       0.2:1));
 	});
+	$("#watchers h4 .badge-info").text(svp.watchers.length);
     }
     svp.rebuildTimeline = rebuildTimeline;
 
@@ -142,7 +143,6 @@ $(function(){
 	    svp.rebuildTimeline();
 	}).data("watcher-index",index);
 	rebuildTimeline()
-	$("#watchers h3 .badge-info").text(svp.watchers.length);
     }
     svp.addWatcher = addWatcher;
     
@@ -150,6 +150,7 @@ $(function(){
 	video = {};
 	video.url = url;
 	video.id = id?id:hashRandom(video.url).toString(36);
+	video.chats = [];
 	if (video.id == "0") {
 	    return false; }
 	try {
@@ -176,7 +177,8 @@ $(function(){
     svp.loadVideo = loadVideo;
     $("#load-video-modal .modal-footer .btn-info").click(function(e) {
 	if (!svp.loadVideo($("#video-url").val())) {
-	    e.preventDefault(); }
+	    e.preventDefault();
+	} else { location.assign("#"); }
     });
 
     blackbg = "body, .well, .progress, #chat-frame, #chat-entry, #current-url a";
@@ -185,16 +187,16 @@ $(function(){
 	$("#playpause i").addClass("icon-play");
 	$("#info .progress").removeClass("progress-striped active");
 	/* Turn on the lights... */
-	$(blackbg).removeClass("blackbg muted");
-	$(".btn").removeClass("btn-inverse");
-	$(".btn i").removeClass("icon-white");
+	$(blackbg).removeClass("blackbg muted",4000);
+	$(".btn").removeClass("btn-inverse",3000);
+	$(".btn i").delay(3000).removeClass("icon-white",1);
 	/* --- */
     }
     svp.lightsOff = function() {
 	/* Turn out the lights... */
-	$(blackbg).addClass("blackbg muted");
-	$(".btn").addClass("btn-inverse");
-	$(".btn i").addClass("icon-white");
+	$(blackbg).stop(true,true).addClass("blackbg muted");
+	$(".btn").stop(true,true).addClass("btn-inverse");
+	$(".btn i").stop(true,true).addClass("icon-white");
 	/* --- */
     }
 
@@ -217,6 +219,7 @@ $(function(){
     function recieveChat(from,message) {
 	if (!message) { return false; }
 	colorstyle = 'background-color:'+svp.watchers[svp.watcherIndices[from]].color;
+	svp.video.chats.push({from:from,message:message});
 	$("#chat-messages").append('<div class="media">'+
 				   '<a class="pull-left chat-icon" style="'+colorstyle+'"></a>'+
 				   '<div class="media-body">'+
@@ -247,6 +250,7 @@ $(function(){
     };
     svp.ws.onmessage = function(data,from,e) {
 	if (data.type == "info") {
+	    processChats = false;
 	    if (!svp.video || svp.video.url !== data.url) {
 		svp.player.addEventListener("canplay",function() {
 		    console.log("Canplay");
@@ -254,6 +258,7 @@ $(function(){
 		svp.loadVideo(data.url,svp.joinid);
 		if (!data.paused) {
 		    $("#playpause").click(); }
+		processChats = true;
 	    }
 	    if (!(name in svp.watcherIndices)) {
 		addWatcher({
@@ -261,6 +266,16 @@ $(function(){
 		    pos: data.mypos,
 		    color: randomColor()
 		});
+	    }
+	    if (processChats) {
+		for (i in data.chats) {
+		    if (i !== "length") {
+			chatfrom = data.chats[i].from;
+			if (chatfrom == "You") { chatfrom = from; }
+			if (chatfrom == sessionStorage.svpUsername) { chatfrom = "You"; }
+			recieveChat(chatfrom,data.chats[i].message);
+		    }
+		}
 	    }
 	}
     };
@@ -271,6 +286,7 @@ $(function(){
 		type: "info",
 		url: svp.video.url,
 		id: svp.video.id,
+		chats: svp.video.chats,
 		paused: svp.player.paused,
 		mypos: svp.watchers[0].pos
 	    },from);
@@ -282,12 +298,26 @@ $(function(){
 		});
 	    }
 	} else if (data.type == "timeupdate") {
-	    svp.watchers[svp.watcherIndices[from]].pos = data.pos;
-	    syncAllPos();
+	    try {
+		svp.watchers[svp.watcherIndices[from]].pos = data.pos;
+		syncAllPos();
+	    } catch (err) { }
 	} else if (data.type == "chat") {
 	    recieveChat(from,data.message);
 	}
     };
+    svp.ws.onquit = function(who,e) {
+	index = svp.watcherIndices[who];
+	if (!index) { return false; }
+	svp.watchers.splice(index,1);
+	for (i in svp.watcherIndices) {
+	    if (svp.watcherIndices[i] > index) {
+		svp.watcherIndices[i] -= 1; }
+	}
+	delete svp.watcherIndices[who];
+	$(".watcher").eq(index).remove();
+	rebuildTimeline();
+    }    
 
     function watcherExists(name) {
 	for (i in svp.watchers) {

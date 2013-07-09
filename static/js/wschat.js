@@ -39,6 +39,8 @@ WSChat = function() {
 		    ws.onbroadcast(data.message,data.from,e);
 		} else if (data.type == "message") {
 		    ws.onmessage(data.message,data.from,e);
+		} else if (data.type == "quit") {
+		    ws.onquit(data.who,e);
 		}
 	    };
 	    this.socket.onerror = function(e){
@@ -76,6 +78,7 @@ WSChat = function() {
 	onbroadcast: function(){},
 	onerror: function(){},
 	onwserror: function(){},
+	onquit: function(){},
 	onclose: function(){},
 	onconnected: function(){}
     };

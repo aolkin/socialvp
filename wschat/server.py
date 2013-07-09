@@ -72,6 +72,9 @@ class WSHandler(websocket.WebSocketHandler):
     def on_close(self):
         if hasattr(self,"name"):
             del ws[self.name]
+            for i in ws:
+                ws[i].write_message(json.dumps({'type': 'quit',
+                                                'who': self.name}))
     
 staticpath = "static"
 while not os.path.isdir(staticpath):
