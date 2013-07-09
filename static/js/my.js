@@ -179,7 +179,7 @@ $(function(){
 	    e.preventDefault(); }
     });
 
-    blackbg = "body, .well, .progress, #chat-frame, #chat-entry";
+    blackbg = "body, .well, .progress, #chat-frame, #chat-entry, #current-url a";
     svp.resetPlayState = function() {
 	$("#playpause i").removeClass("icon-pause");
 	$("#playpause i").addClass("icon-play");
@@ -213,6 +213,29 @@ $(function(){
     svp.player = $("#player").get(0);
     svp.player.addEventListener("timeupdate",syncPos);
     svp.player.addEventListener("ended",svp.resetPlayState);
+
+    function recieveChat(from,message) {
+	if (!message) { return false; }
+	colorstyle = 'background-color:'+svp.watchers[svp.watcherIndices[from]].color;
+	$("#chat-messages").append('<div class="media">'+
+				   '<a class="pull-left chat-icon" style="'+colorstyle+'"></a>'+
+				   '<div class="media-body">'+
+				   '<h5 class="media-heading">'+from+'</h5>'+
+				   '<div class="chat-message">'+message+'</div>'+
+				   '</div></div>');
+	$("#chat-messages").scrollTop($("#chat-messages").prop("scrollHeight"));
+    }
+    $("#chat-input").keyup(function(e){
+	if (e.which == 13) {
+	    svp.ws.broadcast({
+		type: "chat",
+		id: svp.video.id,
+		message: $("#chat-input").val()
+	    });
+	    recieveChat("You",$("#chat-input").val());
+	    $("#chat-input").val('');
+	}
+    });
 
     svp.ws = WSChat();
     svp.ws.onerror = function(code,message) {
@@ -261,6 +284,8 @@ $(function(){
 	} else if (data.type == "timeupdate") {
 	    svp.watchers[svp.watcherIndices[from]].pos = data.pos;
 	    syncAllPos();
+	} else if (data.type == "chat") {
+	    recieveChat(from,data.message);
 	}
     };
 
