@@ -1,6 +1,9 @@
 \documentclass[12pt,letterpaper]{article}
 \usepackage{verbdef}
 \usepackage{upquote}
+
+\usepackage{fancyvrb}
+
 \frenchspacing
 
 \verbdef{\tttype}{"type"}
@@ -16,7 +19,7 @@
 \maketitle
 \vfill
 \begin{abstract}
-The SVP needs a framework for providing enhanced chat functionality, and since WebSockets are so cool, new, and useful, it uses them. WebSockets provide asynchronous full duplex communication between a web browser and a server, allowing either side to send events without anything from the other end. This means that clients can recieve messages sent by other clients without any form of server polling, just one long-running connection.
+The SVP needs a framework for providing enhanced chat functionality, and since WebSockets are so cool, new, and useful, it uses them. WebSockets provide asynchronous full duplex communication between a web browser and a server, allowing either side to send events without anything from the other end. This means that clients can receive messages sent by other clients without any form of server polling, just one long-running connection.
 \end{abstract}
 \clearpage
 
@@ -29,22 +32,22 @@ As a convention in this manual, monospace text refers to literal dictionary key 
 Everything sent to the server should be a JSON encoded dictionary with a \texttt{"command"} field and possibly others depending on the command. Responses from the server will always at least have a \tttype  field.
 
 \subsection{Establishing a Connection}
-Upon creation of a websocket pointing to the websocket server, your client should recieve a message of \texttt{"type" `init'} with a welcome \ttmessage. You may safely ignore this message, as long as you follow the rest of the protocol.
+Upon creation of a websocket pointing to the websocket server, your client should receive a message of \texttt{"type" `init'} with a welcome \ttmessage. You may safely ignore this message, as long as you follow the rest of the protocol.
 
-In order to send and recieve further, you must identify yourself with a nickname. Any non-identification commands sent before identifying will result in you recieving a dictionary of \outcome  with an error message warning you to identify. To identify, send an identification command. The \texttt{"command"} field value here should be \texttt{`identify'}, and there should be another field, \texttt{"name"}, specifying the name you wish your client to use and be contacted by. After sending this, you should recieve a message of \outcome either with \texttt{"success"} set to \texttt{True} or \texttt{False} depending on whether that name was successfully claimed for you. Either way, you will also get an informational \ttmessage.
+In order to send and receive further, you must identify yourself with a nickname. Any non-identification commands sent before identifying will result in you receiving a dictionary of \outcome  with an error message warning you to identify. To identify, send an identification command. The \texttt{"command"} field value here should be \texttt{`identify'}, and there should be another field, \texttt{"name"}, specifying the name you wish your client to use and be contacted by. After sending this, you should receive a message of \outcome either with \texttt{"success"} set to \texttt{True} or \texttt{False} depending on whether that name was successfully claimed for you. Either way, you will also get an informational \ttmessage.
 
 
 \subsection{Sending Messages}
-Once a connection is established and you have identified yourself, you may begin sending messages. The server only acts as a broker between several clients. It does not care what data is being exchanged at all, so clients are free to send and recieve whatever ``messages'' they want, and the other clients must deal with parsing whatever data is sent their way.
+Once a connection is established and you have identified yourself, you may begin sending messages. The server only acts as a broker between several clients. It does not care what data is being exchanged at all, so clients are free to send and receive whatever ``messages'' they want, and the other clients must deal with parsing whatever data is sent their way.
 
 The server accepts two \texttt{"command"}s for sending messages, \texttt{`broadcast'} and \texttt{`message'}. \texttt{`broadcast'} sends the \ttmessage to all other identified clients who are connected to the server. \texttt{`message'} sends the \ttmessage to the client specified in the \texttt{"to"} field of the request. If no client with that name is connected to the server, it send a message of \outcome  with \texttt{"success"}  set to \texttt{False}  and a descriptive error \ttmessage.
 
-\subsection{Recieving Messages}
-When another connected client sends a \texttt{`broadcast'}, all other clients recieve a message of \texttt{"type" `broadcast'} with a \texttt{"from"} field set to the name of the client who sent the broadcast. They also recieve the \ttmessage  payload sent in the broadcast in a \ttmessage field.
+\subsection{Receiving Messages}
+When another connected client sends a \texttt{`broadcast'}, all other clients receive a message of \texttt{"type" `broadcast'} with a \texttt{"from"} field set to the name of the client who sent the broadcast. They also receive the \ttmessage  payload sent in the broadcast in a \ttmessage field.
 
-When a client sends a message of \texttt{"type" `message'}, the client whose name is specified in the message's \texttt{"to"} field will recieve a message of \texttt{"type" `message'}. This message will also have a \texttt{"from"} field containing the sender's name, as well as a \ttmessage  field containing the sent message.
+When a client sends a message of \texttt{"type" `message'}, the client whose name is specified in the message's \texttt{"to"} field will receive a message of \texttt{"type" `message'}. This message will also have a \texttt{"from"} field containing the sender's name, as well as a \ttmessage  field containing the sent message.
 
-Messages of \outcome  should only be recieved in response to commands sent by the client, telling whether the requested action was successful or not, and why.
+Messages of \outcome  should only be received in response to commands sent by the client, telling whether the requested action was successful or not, and why.
 
 %\clearpage
 
@@ -55,7 +58,7 @@ Messages of \outcome  should only be recieved in response to commands sent by th
   \item[300] \textbf{\textit{``Indentified successfully!''}} \\
     This code is sent with a \texttt{True "success"} field, indicating that the name used to identify is unique and was accepted.
   \item[305] \textbf{\textit{``Client with that name already exists!''}} \\
-    This code is sent after attempting to identify when the client has chosen a name that is already taken. A client recieving this code should \texttt{identify} again using a different name.
+    This code is sent after attempting to identify when the client has chosen a name that is already taken. A client receiving this code should \texttt{identify} again using a different name.
   \item[400] \textbf{\textit{``Missing required request field!''}} \\
     This code is sent when a client sends a \texttt{message} to the server, but is missing the \texttt{"command"} field or a field required by that command.
   \item[404] \textbf{\textit{``No client with that name is currently connected!''}} \\
