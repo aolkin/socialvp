@@ -1,6 +1,8 @@
 
 *.zip
 
+static/url-json/*.json
+
 # Emacs ignores
 *~
 \#*\#

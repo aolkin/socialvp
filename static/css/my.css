@@ -101,6 +101,21 @@
 
 .muted .span8 .btn { opacity: 0.6; }
 
+#url-file {
+    opacity: 0.3;
+    margin-bottom: 0px;
+}
+
+.info-item {
+    margin: 0.4em 0;
+}
+.info-length {
+    font-weight: bold;
+}
+.info-length:before {
+    content: "Length: "
+}
+
 /** Chat box styles */
 .span4 .well-small h4 {
     margin-top: -0.2em;

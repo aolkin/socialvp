@@ -26,8 +26,10 @@ function hhmmss(seconds,frac) {
 }
 
 svp.loadUrls = function(query, process) {
+    jsonurl = "url-json/"+($("#url-file").val()?$("#url-file").val():"urls");
+    if (jsonurl.indexOf(".json",jsonurl.length-5) === -1) { jsonurl += ".json"; }
     $.ajax({
-	url: "urls.json",
+	url: jsonurl,
 	cache: false,
 	dataType: "json"
     }).done(function(data,status,xhr){
@@ -35,8 +37,39 @@ svp.loadUrls = function(query, process) {
     }).fail(function(xhr,error){
 	console.log("Typeahead XHR Error:",error);
     });
+    $.ajax({
+	url: jsonurl.slice(0,-5)+".info.json",
+	cache: false,
+	dataType: "json"
+    }).done(function(data,status,xhr){
+	svp.videoInfo = data;
+    }).fail(function(xhr,error){
+	console.log("Typeahead XHR Error:",error);
+    });
 }
-$("#video-url").typeahead({source:svp.loadUrls});
+function updateVideoInfo(item){
+    if (!svp.videoInfo) { return item; }
+    obj = svp.videoInfo[item];
+    if (!obj) {
+	$("#video-info").html("Sorry, no info found for this url.");
+	return item; }
+    info = '<div class="info-item info-title text-success"><h4>'+
+	(obj.title?obj.title:"No Title")+
+	'</h4></div><div class="info-item info-description">'+
+	(obj.desc?obj.desc:"No Description")+'</div>'+
+	'<div class="info-item info-website pull-right"><a'+
+	(obj.link?' href="'+obj.link+'" target="_blank"':'')+'>'+
+	(obj.link?obj.link:"No Website")+'</a></div>'+
+	'<div class="info-item info-length text-info">'+
+	(obj.length?hhmmss(obj.length):"Unknown")+'</div>';
+    $("#video-info").html(info);
+    return item;
+}
+$("#video-url").typeahead({
+    source: svp.loadUrls,
+    minLength: 0,
+    updater: updateVideoInfo
+}).on("keyup change",function(){ updateVideoInfo($(this).val()); });
 
 $(function(){
 
