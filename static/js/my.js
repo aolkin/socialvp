@@ -387,13 +387,16 @@ $(function(){
     svp.player.addEventListener("timeupdate",syncPos);
     svp.player.addEventListener("ended",svp.resetPlayState);
 
-    function recieveChat(from,message) {
+    function receiveChat(from,message,time) {
 	if (!message) { return false; }
 	colorstyle = 'background-color:'+svp.watchers[svp.watcherIndices[from]].color;
-	svp.video.chats.push({from:from,message:message});
+	timestamp = time?time:new Date().getTime()/1000;
+	svp.video.chats.push({from:from,message:message,time:timestamp});
 	$("#chat-messages").append('<div class="media">'+
 				   '<a class="pull-left chat-icon" style="'+colorstyle+'"></a>'+
 				   '<div class="media-body">'+
+				   '<div class="pull-right chat-time text-info" data-livestamp="'+
+				   timestamp+'"></div>'+
 				   '<h5 class="media-heading">'+from+'</h5>'+
 				   '<div class="chat-message">'+message+'</div>'+
 				   '</div></div>');
@@ -406,7 +409,7 @@ $(function(){
 		id: svp.video.id,
 		message: $("#chat-input").val()
 	    });
-	    recieveChat("You",$("#chat-input").val());
+	    receiveChat("You",$("#chat-input").val());
 	    $("#chat-input").val('');
 	}
     });
@@ -444,7 +447,7 @@ $(function(){
 			if (chatfrom == "You") { chatfrom = from; }
 			if (chatfrom == sessionStorage.svpUsername) { chatfrom = "You"; }
 			try {
-			    recieveChat(chatfrom,data.chats[i].message);
+			    receiveChat(chatfrom,data.chats[i].message,data.chats[i].time);
 			} catch (err) { }
 		    }
 		}
@@ -494,7 +497,7 @@ $(function(){
 		}
 	    } catch (err) { }
 	} else if (data.type == "chat") {
-	    recieveChat(from,data.message);
+	    receiveChat(from,data.message);
 	}
     };
     svp.ws.onquit = function(who,e) {

@@ -131,10 +131,15 @@
     box-shadow: 0 0 6px -2px black, 0 0 2px inset;
 }
 
-.media { overflow: initial; }
+.media {
+    overflow: initial;
+    margin-top: 8px;
+}
 .media-body {
     font-size: 0.9em;
     overflow: auto;
+    border-top: 1px solid rgba(100, 100, 100, 0.5);
+    padding-top: 4px;
 }
 .media-heading {
     line-height: 1em; }
