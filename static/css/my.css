@@ -22,6 +22,17 @@
 }
 
 .modal-body input { width: 97%; }
+.modal-body .typeahead {
+    position: static;
+    margin-top: -0.8em;
+    width: 99%;
+    overflow-x: hidden;
+}
+.modal-body .typeahead a {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 #link { cursor: text; }
 
 #watchers h3 .badge {
@@ -67,9 +78,28 @@
     height: 30px;
 }
 
-#info.muted > * {
+#info.muted > *:not(.progress-warning):not(.btn-toolbar) {
     opacity: 0.3;
 }
+
+.progress.progress-warning {
+    margin-top: -2.85em;
+}
+#slider-view {
+    position: relative;
+    opacity: 0.8;
+}
+.muted #slider-view {
+    opacity: 0.4;
+}
+
+#info .btn-toolbar {
+    width: 316px;
+    margin: auto;
+    margin-bottom: 16px;
+}
+
+.muted .span8 .btn { opacity: 0.6; }
 
 /** Chat box styles */
 .span4 .well-small h4 {
