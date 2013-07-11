@@ -243,7 +243,15 @@ $(function(){
     svp.rebuildTimeline = rebuildTimeline;
 
     function resetSync() {
-	$("button.sync.active").effect("highlight").btn("toggle");
+	$("button.sync.active").each(function(index,el){
+	    name = $(el).parent().parent().prev().prev().text();
+	    svp.ws.message({
+		id: svp.video.id,
+		type: "sync",
+		sync: false,
+	    },name);
+	    $(el).effect("highlight").btn("toggle");
+	});
 	svp.video.syncTo = 0;
     }
 
@@ -277,6 +285,11 @@ $(function(){
 		$(this).btn('toggle');
 		return false; }
 	    svp.player.currentTime = svp.watchers[index].pos;
+	    svp.ws.message({
+		id: svp.video.id,
+		type: "sync",
+		sync: true
+	    },svp.watchers[index].name);
 	}).data("watcher-index",index);
 	rebuildTimeline()
     }
@@ -436,6 +449,10 @@ $(function(){
 		    }
 		}
 	    }
+	} else if (data.type == "sync") {
+	    console.log(from);
+	    $(".watcher").eq(svp.watcherIndices[from]).effect("highlight")
+		.attr("title",data.sync?"Synced to you":"No longer synced to you");
 	}
     };
     svp.ws.onbroadcast = function(data,from,e) {
@@ -484,6 +501,10 @@ $(function(){
 	try {
 	    index = svp.watcherIndices[who];
 	} catch (err) { return false; }
+	if (index === svp.video.syncTo) {
+	    resetSync();
+	} else if (index < svp.video.syncTo) {
+	    svp.video.syncTo -= 1; }
 	svp.watchers.splice(index,1);
 	for (i in svp.watcherIndices) {
 	    if (svp.watcherIndices[i] > index) {
