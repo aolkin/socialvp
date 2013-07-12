@@ -537,6 +537,8 @@ $(function(){
 	try {
 	    index = svp.watcherIndices[who];
 	} catch (err) { return false; }
+	if (!index) { return false; }
+	console.log(index,svp.watchers[index],who);
 	if (index === svp.video.syncTo) {
 	    resetSync();
 	} else if (index < svp.video.syncTo) {
