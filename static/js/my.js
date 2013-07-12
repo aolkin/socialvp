@@ -96,7 +96,9 @@ $(function(){
 	}
     });
 
-    $("#timeline").data("bumped",false);
+    try {
+	$("#timeline").data("bumped",false);
+    } catch (err) { }
     function syncPos(e) {
 	svp.watchers[0].pos = Math.round(svp.player.currentTime*10)/10;
 	$(".watcher:first-of-type .time").text(hhmmss(svp.watchers[0].pos,true));
@@ -575,7 +577,7 @@ $(function(){
 	svp.ws.init("ws://"+location.host+"/wschat",name);
     }
     svp.initializeClient = init;
-    $("#get-link-modal").modal("show").modal("hide");
+    $("#get-link-modal").modal({show:true}).modal("show").modal("hide");
     $("#set-name-modal").modal({
 	backdrop: "static",
 	keyboard: false,
