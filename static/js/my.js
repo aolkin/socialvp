@@ -1,3 +1,17 @@
+/**
+   Social Video Player
+   
+   @author Aaron Olkin
+   
+   @module SVP
+   @main
+*/
+
+/**
+   The base object for the application.
+   @class svp
+   @static
+*/
 var svp = {};
 
 function hashRandom(str) {
@@ -47,6 +61,14 @@ svp.loadUrls = function(query, process) {
 	console.log("Typeahead XHR Error:",error);
     });
 }
+
+/**
+   Called to display the information associated with a given video in the
+   "Load a New Video" dialog box.
+   @method updateVideoInfo
+   @param {String} item The URL to a video
+   @return {String} item
+*/
 function updateVideoInfo(item){
     if (!svp.videoInfo) { return item; }
     obj = svp.videoInfo[item];
@@ -63,6 +85,7 @@ function updateVideoInfo(item){
 	'<div class="info-item info-length text-info">'+
 	(obj.length?hhmmss(obj.length):"Unknown")+'</div>';
     $("#video-info").html(info);
+    plugins.event(null,arguments);
     return item;
 }
 $("#video-url").typeahead({
@@ -73,8 +96,24 @@ $("#video-url").typeahead({
 
 $(function(){
 
+    /**
+       Called when the volume is adjusted using the slider
+       (which should be the only way for the volume to change).
+       *For Plugin use, see {{#crossLink "Plugin/syncVolume:event"}}here{{/crossLink}}.*
+       @method syncVolume
+       @param {Event} e The event object
+       @param {Object} ui The jQueryUI second callback argument
+    */
+    /**
+       Fired when the volume is adjusted.
+       @event syncVolume
+       @param {Number} volume The new volume as a decimal
+       @for Plugin
+    */
     function syncVolume(e,ui) {
-	svp.player.volume = ui.value/100; }
+	svp.player.volume = ui.value/100;
+	plugins.event(arguments.callee,[svp.player.volume]);
+    }
     $("#volume").slider({
 	orientation: "vertical",
 	range: "min",
@@ -99,6 +138,13 @@ $(function(){
     try {
 	$("#timeline").data("bumped",false);
     } catch (err) { }
+    /**
+       Called on video timeupdate, it takes care of updating all the various counters,
+       timelines, etc, as well as broadcasting the update.
+       @method syncPos
+       @for svp
+       @param {Event} The event object
+    */
     function syncPos(e) {
 	svp.watchers[0].pos = Math.round(svp.player.currentTime*10)/10;
 	$(".watcher:first-of-type .time").text(hhmmss(svp.watchers[0].pos,true));
@@ -135,6 +181,7 @@ $(function(){
 	    $("#timeline").data("bumped",true); }
 	svp.ws.broadcast({type:"timeupdate", pos:svp.watchers[0].pos, id:svp.video.id});
 	syncAllPos();
+	plugins.event(null,arguments);
     }
 
     function syncAllPos() {
@@ -178,7 +225,7 @@ $(function(){
 	$("#fast-back").html($("#fast-back").data("original-html"));
     }
 
-    $("#transport .btn[id]").click(function(e){
+    $("#transport .btn[id]").click(function playPause(e){
 	resetTransport();
 	resetSync();
 	if (this.id.indexOf("fast") >= 0) {
@@ -200,6 +247,7 @@ $(function(){
 	    svp.player.currentTime += ((this.id.indexOf("back")>=0)?-300:300);
 	    broadcastJump();
 	}
+	plugins.event(null,arguments);
     });
 
     function broadcastJump(from) {
@@ -209,6 +257,7 @@ $(function(){
 	    pos: svp.player.currentTime,
 	    from: from
 	});
+	plugins.event(null,arguments);
     }
 
     function broadcastStateChange() {
@@ -217,6 +266,7 @@ $(function(){
 	    type: "statechange",
 	    paused: svp.player.paused
 	});
+	plugins.event(null,arguments);
     }
 
     svp.tlsize = 100;
@@ -252,6 +302,7 @@ $(function(){
 		    resetSync();
 		    if (ui.value < 0) { e.preventDefault(); return false; }
 		    svp.player.currentTime = ui.value;
+		    plugins.event("timelineSlide",[ui.value]);
 		} else {
 		    e.preventDefault(); }
 	    },
@@ -288,6 +339,7 @@ $(function(){
 	    $(el).effect("highlight").btn("toggle");
 	});
 	svp.video.syncTo = 0;
+	plugins.event(null,arguments);
     }
 
     function addWatcher(watcher) {
@@ -327,6 +379,7 @@ $(function(){
 	    },svp.watchers[index].name);
 	}).data("watcher-index",index);
 	rebuildTimeline()
+	plugins.event(null,arguments);
     }
     svp.addWatcher = addWatcher;
     
@@ -356,6 +409,7 @@ $(function(){
 	    pos: 0,
 	    color: null
 	});
+	plugins.event(null,arguments);
 	return true;
     }
     svp.loadVideo = loadVideo;
@@ -366,12 +420,13 @@ $(function(){
     });
 
     blackbg = "body, .well, .progress, #chat-frame, #chat-entry, #current-url a";
-    svp.resetPlayState = function() {
+    svp.resetPlayState = function resetPlayState() {
 	$(".playpause i").removeClass("icon-pause");
 	$(".playpause i").addClass("icon-play");
 	$("#info .progress-default").removeClass("progress-striped active");
+	plugins.event(null,arguments);
     }
-    svp.lightsOn = function() {
+    svp.lightsOn = function lightsOn() {
 	/* Turn on the lights... */
 	$(blackbg).removeClass("blackbg muted",1000).removeClass("blackbg muted");
 	$(".btn").removeClass("btn-inverse",500);
@@ -379,8 +434,9 @@ $(function(){
 	$("#lights-text").text("Out");
 	svp.lightsAreOn = true;
 	/* --- */
+	plugins.event(null,arguments);
     }
-    svp.lightsOff = function() {
+    svp.lightsOff = function lightsOff() {
 	/* Turn out the lights... */
 	$(blackbg).stop(true,true).addClass("blackbg muted");
 	$(".btn").stop(true,true).addClass("btn-inverse");
@@ -388,6 +444,7 @@ $(function(){
 	$("#lights-text").text("On");
 	svp.lightsAreOn = false;
 	/* --- */
+	plugins.event(null,arguments);
     }
     svp.lightsAreOn = true;
 
@@ -411,6 +468,7 @@ $(function(){
 	    svp.player.pause();
 	}
 	broadcastStateChange(from);
+	plugins.event(null,arguments);
     }
 
     $(".playpause, #player").click(function(){ stateChange(); });
@@ -447,17 +505,19 @@ $(function(){
 	    receiveChat("You",$("#chat-input").val());
 	    $("#chat-input").val('');
 	}
+	plugins.event(null,arguments);
     });
 
     svp.ws = WSChat();
-    svp.ws.onerror = function(code,message) {
+    svp.ws.onerror = function wsError(code,message) {
 	console.log(code,message);
 	if (code == 305) {
 	    location.assign("#error:nameexists");
 	    location.reload();
 	}
+	plugins.event(null,arguments);
     };
-    svp.ws.onmessage = function(data,from,e) {
+    svp.ws.onmessage = function wsMessage(data,from,e) {
 	if (data.type == "info") {
 	    processChats = false;
 	    if (!svp.video || svp.video.url !== data.url) {
@@ -492,8 +552,9 @@ $(function(){
 	    $(".watcher").eq(svp.watcherIndices[from]).effect("highlight")
 		.attr("title",data.sync?"Synced to you":"No longer synced to you");
 	}
+	plugins.event(null,arguments);
     };
-    svp.ws.onbroadcast = function(data,from,e) {
+    svp.ws.onbroadcast = function wsBroadcast(data,from,e) {
 	if (data.id != ((svp.video&&svp.video.id)?svp.video.id:svp.joinid)) { return false; }
 	if (data.type == "join") {
 	    svp.ws.message({
@@ -534,8 +595,9 @@ $(function(){
 	} else if (data.type == "chat") {
 	    receiveChat(from,data.message);
 	}
+	plugins.event(null,arguments);
     };
-    svp.ws.onquit = function(who,e) {
+    svp.ws.onquit = function wsQuit(who,e) {
 	try {
 	    index = svp.watcherIndices[who];
 	} catch (err) { return false; }
@@ -553,6 +615,7 @@ $(function(){
 	delete svp.watcherIndices[who];
 	$(".watcher").eq(index).remove();
 	rebuildTimeline();
+	plugins.event(null,arguments);
     }    
 
     function watcherExists(name) {
@@ -566,7 +629,7 @@ $(function(){
     }
 
     function init(name) {
-	sessionStorage.svpUsername = name
+	localStorage.svpUsername = name
 	$("#load-video-modal").modal('show');
 	if (location.hash.substr(1,5) == "join:") {
 	    $("#load-video-modal").modal('hide');
@@ -575,6 +638,7 @@ $(function(){
 		svp.ws.broadcast({type:"join",id:svp.joinid}); }
 	}
 	svp.ws.init("ws://"+location.host+"/wschat",name);
+	plugins.event(null,arguments);
     }
     svp.initializeClient = init;
     $("#get-link-modal").modal({show:true}).modal("show").modal("hide");
@@ -585,7 +649,7 @@ $(function(){
     }).modal('show');
     
     if (location.hash.substr(1,10) == "error:name") {
-	$("#nickname").val(sessionStorage.svpUsername);
+	$("#nickname").val(localStorage.svpUsername);
 	textel = $("#set-name-modal .alert-error").removeClass("hide").children("span");
 	error = location.hash.substr(7);
 	if (error == "nameexists") {
@@ -593,9 +657,9 @@ $(function(){
 	} else {
 	    textel.html("A Username error occured! Please try again.");
 	}
-    } else if (sessionStorage.svpUsername) {
+    } else if (localStorage.svpUsername) {
 	$("#set-name-modal").modal('hide');
-	init(sessionStorage.svpUsername);
+	init(localStorage.svpUsername);
     }
     $("#set-name-modal .modal-footer .btn").click(function(){
 	name = $("#nickname").val();
@@ -604,5 +668,9 @@ $(function(){
 	    init(name);
 	}
     })
+
+    plugins.init(svp);
+    for (i=0;i<plugins.length;i++) {
+	new plugins[i](); }
 
 });

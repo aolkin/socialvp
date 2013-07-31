@@ -1,0 +1,8 @@
+new Plugin(
+    function LocalVideo(){
+	
+    },
+    {
+	
+    }
+);

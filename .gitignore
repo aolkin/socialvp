@@ -3,6 +3,12 @@
 
 static/url-json/*.json
 
+/apidocs
+/static/jquery-ui-bootstrap
+
+/docs.sh
+/logo.xcf
+
 # Emacs ignores
 *~
 \#*\#
@@ -39,3 +45,4 @@ develop-eggs
 lib
 lib64
 __pycache__
+

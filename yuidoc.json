@@ -1,0 +1,13 @@
+{
+    "name": "SVP API",
+    "description": "The API for the Social Video Player, for use in developing plugins.",
+    "version": "v0.9",
+    "logo": "http://baryon5.github.io/socialvp/logo.png",
+    "url": "https://github.com/baryon5/socialvp/",
+    "options": {
+	"paths": "static/js/",
+	"outdir": "apidocs",
+	"linkNatives": true,
+	"tabtospace": 4
+    }
+}

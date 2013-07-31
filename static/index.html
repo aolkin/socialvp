@@ -22,7 +22,7 @@
           <a class="brand" href="javascript:location.reload();">Social Video Player</a>
           <div class="nav-collapse collapse pull-right">
             <ul class="nav">
-              <li><a href="/" onclick="sessionStorage.removeItem('svpUsername')">
+              <li><a href="/" onclick="localStorage.removeItem('svpUsername')">
 		  Reset Name <i class="icon-user icon-white"></i></a></li>
               <li><a href="#load-video-modal" data-toggle="modal">Load New Video
 		  <i class="icon-film icon-white"></i></a></li>
@@ -144,10 +144,13 @@
       $.fn.btn = $.fn.button.noConflict();
     </script>
     <script src="js/jquery-ui-1.10.3.no-tooltip.min.js"></script>
-    <script src="js/moment.min.js"></script>
-    <script src="js/livestamp.min.js"></script>
+    <!--<script src="js/moment.min.js"></script>
+    <!--<script src="js/livestamp.min.js"></script>
     <script src="js/wschat.js"></script>
-    <script src="js/my.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/localvideo.js"></script>
+    <script src="js/my.js"></script>-->
+    <script src="js/index.min.js"></script>
 
   </body>
 </html>
