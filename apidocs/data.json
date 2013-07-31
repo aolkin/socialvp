@@ -1,0 +1,181 @@
+{
+    "project": {
+        "name": "SVP API",
+        "description": "The API for the Social Video Player, for use in developing plugins.",
+        "version": "v0.9",
+        "logo": "",
+        "url": "https://github.com/baryon5/socialvp/"
+    },
+    "files": {
+        "static/js/bootstrap.min.js": {
+            "name": "static/js/bootstrap.min.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "static/js/my.js": {
+            "name": "static/js/my.js",
+            "modules": {
+                "SVP": 1
+            },
+            "classes": {
+                "svp": 1
+            },
+            "fors": {
+                "Plugin": 1,
+                "svp": 1
+            },
+            "namespaces": {}
+        },
+        "static/js/plugins.js": {
+            "name": "static/js/plugins.js",
+            "modules": {},
+            "classes": {
+                "Plugin": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "SVP": {
+            "name": "SVP",
+            "submodules": {},
+            "classes": {
+                "svp": 1,
+                "Plugin": 1
+            },
+            "fors": {
+                "Plugin": 1,
+                "svp": 1
+            },
+            "namespaces": {},
+            "tag": "module",
+            "file": "static/js/plugins.js",
+            "line": 14,
+            "description": "Social Video Player",
+            "author": "Aaron Olkin",
+            "itemtype": "main"
+        }
+    },
+    "classes": {
+        "svp": {
+            "name": "svp",
+            "shortname": "svp",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "SVP",
+            "namespace": "",
+            "file": "static/js/my.js",
+            "line": 10,
+            "description": "The base object for the application.",
+            "static": 1
+        },
+        "Plugin": {
+            "name": "Plugin",
+            "shortname": "Plugin",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "SVP",
+            "namespace": "",
+            "file": "static/js/plugins.js",
+            "line": 14,
+            "description": "Allows creation of plugins.",
+            "is_constructor": 1
+        }
+    },
+    "classitems": [
+        {
+            "file": "static/js/bootstrap.min.js",
+            "line": 1,
+            "description": "Bootstrap.js by @fat & @mdo\nplugins: bootstrap-transition.js, bootstrap-modal.js, bootstrap-dropdown.js, bootstrap-scrollspy.js, bootstrap-tab.js, bootstrap-tooltip.js, bootstrap-popover.js, bootstrap-affix.js, bootstrap-alert.js, bootstrap-button.js, bootstrap-collapse.js, bootstrap-carousel.js, bootstrap-typeahead.js\nCopyright 2012 Twitter, Inc.\nhttp://www.apache.org/licenses/LICENSE-2.0.txt",
+            "class": "svp"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 65,
+            "description": "Called to display the information associated with a given video in the\n\"Load a New Video\" dialog box.",
+            "itemtype": "method",
+            "name": "updateVideoInfo",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "The URL to a video",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "item",
+                "type": "String"
+            },
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 99,
+            "description": "Called when the volume is adjusted using the slider\n(which should be the only way for the volume to change).\n*For Plugin use, see {{#crossLink \"Plugin/syncVolume:event\"}}here{{/crossLink}}.*",
+            "itemtype": "method",
+            "name": "syncVolume",
+            "params": [
+                {
+                    "name": "e",
+                    "description": "The event object",
+                    "type": "Event"
+                },
+                {
+                    "name": "ui",
+                    "description": "The jQueryUI second callback argument",
+                    "type": "Object"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 107,
+            "description": "Fired when the volume is adjusted.",
+            "itemtype": "event",
+            "name": "syncVolume",
+            "params": [
+                {
+                    "name": "volume",
+                    "description": "The new volume as a decimal",
+                    "type": "Number"
+                }
+            ],
+            "class": "Plugin",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 141,
+            "description": "Called on video timeupdate, it takes care of updating all the various counters,\ntimelines, etc, as well as broadcasting the update.",
+            "itemtype": "method",
+            "name": "syncPos",
+            "params": [
+                {
+                    "name": "The",
+                    "description": "event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "Missing item type\nBootstrap.js by @fat & @mdo\nplugins: bootstrap-transition.js, bootstrap-modal.js, bootstrap-dropdown.js, bootstrap-scrollspy.js, bootstrap-tab.js, bootstrap-tooltip.js, bootstrap-popover.js, bootstrap-affix.js, bootstrap-alert.js, bootstrap-button.js, bootstrap-collapse.js, bootstrap-carousel.js, bootstrap-typeahead.js\nCopyright 2012 Twitter, Inc.\nhttp://www.apache.org/licenses/LICENSE-2.0.txt",
+            "line": " static/js/bootstrap.min.js:1"
+        }
+    ]
+}

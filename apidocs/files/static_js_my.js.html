@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>static/js/my.js - SVP API</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title="SVP API"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: v0.9</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/Plugin.html">Plugin</a></li>
+            
+                <li><a href="../classes/svp.html">svp</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/SVP.html">SVP</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: static/js/my.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+   Social Video Player
+   
+   @author Aaron Olkin
+   
+   @module SVP
+   @main
+*/
+
+/**
+   The base object for the application.
+   @class svp
+   @static
+*/
+var svp = {};
+
+function hashRandom(str) {
+    if (str.length == 0) return 0;
+    var hash = Math.round(Math.random()*100000);
+    for (i = 0; i &lt; str.length; i++) {
+    char = str.charCodeAt(i);
+    hash = ((hash&lt;&lt;5)-hash)+char;
+    hash = hash &amp; hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
+}
+
+function randomColor() { return &quot;#&quot;+(&#x27;00000&#x27;+(Math.random()*(1&lt;&lt;24)|0).toString(16)).slice(-6); }
+
+function complementHex(hex_color) {
+    c = hex_color.replace(/^#/,&#x27;&#x27;)
+    sum = parseInt(c[0]+c[1], 16)
+    sum += parseInt(c[2]+c[3], 16)
+    sum += parseInt(c[4]+c[5], 16)
+    return (sum &lt; 200)?&quot;#FFFFFF&quot;:&quot;#000000&quot;;
+}
+
+function hhmmss(seconds,frac) {
+    return moment.unix(seconds-68400).format(&quot;HH:mm:ss&quot;+(frac?&quot;.S&quot;:&quot;&quot;))
+}
+
+svp.loadUrls = function(query, process) {
+    jsonurl = &quot;url-json/&quot;+($(&quot;#url-file&quot;).val()?$(&quot;#url-file&quot;).val():&quot;urls&quot;);
+    if (jsonurl.indexOf(&quot;.json&quot;,jsonurl.length-5) === -1) { jsonurl += &quot;.json&quot;; }
+    $.ajax({
+    url: jsonurl,
+    cache: false,
+    dataType: &quot;json&quot;
+    }).done(function(data,status,xhr){
+    process(data);
+    }).fail(function(xhr,error){
+    console.log(&quot;Typeahead XHR Error:&quot;,error);
+    });
+    $.ajax({
+    url: jsonurl.slice(0,-5)+&quot;.info.json&quot;,
+    cache: false,
+    dataType: &quot;json&quot;
+    }).done(function(data,status,xhr){
+    svp.videoInfo = data;
+    }).fail(function(xhr,error){
+    console.log(&quot;Typeahead XHR Error:&quot;,error);
+    });
+}
+
+/**
+   Called to display the information associated with a given video in the
+   &quot;Load a New Video&quot; dialog box.
+   @method updateVideoInfo
+   @param {String} item The URL to a video
+   @return {String} item
+*/
+function updateVideoInfo(item){
+    if (!svp.videoInfo) { return item; }
+    obj = svp.videoInfo[item];
+    if (!obj) {
+    $(&quot;#video-info&quot;).html(&quot;Sorry, no info found for this url.&quot;);
+    return item; }
+    info = &#x27;&lt;div class=&quot;info-item info-title text-success&quot;&gt;&lt;h4&gt;&#x27;+
+    (obj.title?obj.title:&quot;No Title&quot;)+
+    &#x27;&lt;/h4&gt;&lt;/div&gt;&lt;div class=&quot;info-item info-description&quot;&gt;&#x27;+
+    (obj.desc?obj.desc:&quot;No Description&quot;)+&#x27;&lt;/div&gt;&#x27;+
+    &#x27;&lt;div class=&quot;info-item info-website pull-right&quot;&gt;&lt;a&#x27;+
+    (obj.link?&#x27; href=&quot;&#x27;+obj.link+&#x27;&quot; target=&quot;_blank&quot;&#x27;:&#x27;&#x27;)+&#x27;&gt;&#x27;+
+    (obj.link?obj.link:&quot;No Website&quot;)+&#x27;&lt;/a&gt;&lt;/div&gt;&#x27;+
+    &#x27;&lt;div class=&quot;info-item info-length text-info&quot;&gt;&#x27;+
+    (obj.length?hhmmss(obj.length):&quot;Unknown&quot;)+&#x27;&lt;/div&gt;&#x27;;
+    $(&quot;#video-info&quot;).html(info);
+    plugins.event(null,arguments);
+    return item;
+}
+$(&quot;#video-url&quot;).typeahead({
+    source: svp.loadUrls,
+    minLength: 0,
+    updater: updateVideoInfo
+}).on(&quot;keyup change&quot;,function(){ updateVideoInfo($(this).val()); });
+
+$(function(){
+
+    /**
+       Called when the volume is adjusted using the slider
+       (which should be the only way for the volume to change).
+       *For Plugin use, see {{#crossLink &quot;Plugin/syncVolume:event&quot;}}here{{/crossLink}}.*
+       @method syncVolume
+       @param {Event} e The event object
+       @param {Object} ui The jQueryUI second callback argument
+    */
+    /**
+       Fired when the volume is adjusted.
+       @event syncVolume
+       @param {Number} volume The new volume as a decimal
+       @for Plugin
+    */
+    function syncVolume(e,ui) {
+    svp.player.volume = ui.value/100;
+    plugins.event(arguments.callee,[svp.player.volume]);
+    }
+    $(&quot;#volume&quot;).slider({
+    orientation: &quot;vertical&quot;,
+    range: &quot;min&quot;,
+    value: 100,
+    slide: syncVolume, change: syncVolume
+    }).hide().parent().hover(function(){
+    $(&quot;#volume&quot;).show()
+    },function(){
+    $(&quot;#volume&quot;).hide();
+    }).click(function(){
+    el = $(&quot;#volume&quot;);
+    val = el.slider(&quot;value&quot;);
+    if (val !== 0) {
+        el.data(&quot;old-volume&quot;,val);
+        el.slider(&quot;value&quot;,0);
+    } else {
+        val = el.data(&quot;old-volume&quot;);
+        el.slider(&quot;value&quot;,val?val:100);
+    }
+    });
+
+    try {
+    $(&quot;#timeline&quot;).data(&quot;bumped&quot;,false);
+    } catch (err) { }
+    /**
+       Called on video timeupdate, it takes care of updating all the various counters,
+       timelines, etc, as well as broadcasting the update.
+       @method syncPos
+       @for svp
+       @param {Event} The event object
+    */
+    function syncPos(e) {
+    svp.watchers[0].pos = Math.round(svp.player.currentTime*10)/10;
+    $(&quot;.watcher:first-of-type .time&quot;).text(hhmmss(svp.watchers[0].pos,true));
+    $(&quot;#global-pos&quot;).css(&quot;width&quot;,(svp.player.currentTime/svp.player.duration*100)+&quot;%&quot;);
+    texts = [hhmmss(svp.player.currentTime),
+         &quot;-&quot;+hhmmss(svp.player.duration-svp.player.currentTime)];
+    $(&quot;.span1.time&quot;).each(function(index,el){
+        $(el).text(texts[index]);
+    });
+    time = svp.player.currentTime;
+    origmin = min = $(&quot;#timeline&quot;).slider(&quot;option&quot;,&quot;min&quot;);
+    origmax = max = $(&quot;#timeline&quot;).slider(&quot;option&quot;,&quot;max&quot;);
+    $(&quot;#slider-view&quot;).css(&quot;width&quot;,(max-min)/svp.player.duration*100+&quot;%&quot;)
+        .css(&quot;left&quot;,min/svp.player.duration*100+&quot;%&quot;);
+    chgsize = (max-min)-10;
+    while (time+3&gt;max) {
+        $(&quot;#timeline&quot;).slider(&quot;option&quot;,{
+        min: min+chgsize, max: max+chgsize
+        });
+        min += chgsize; max += chgsize;
+    }
+    while (time-3&lt;min) {
+        $(&quot;#timeline&quot;).slider(&quot;option&quot;,{
+        min: min-chgsize, max: max-chgsize
+        });
+        min -= chgsize; max -= chgsize;
+    }
+    if (min&lt;0) { $(&quot;#timeline&quot;).slider(&quot;option&quot;,{min:0,max:max-min}); }
+    if (max&gt;svp.player.duration) {
+        $(&quot;#timeline&quot;).slider(&quot;option&quot;, {min:svp.player.duration-(max-min),
+                         max:svp.player.duration}); }
+    if ($(&quot;#timeline&quot;).slider(&quot;option&quot;,&quot;min&quot;) !== origmin ||
+        $(&quot;#timeline&quot;).slider(&quot;option&quot;,&quot;max&quot;) !== origmax) {
+        $(&quot;#timeline&quot;).data(&quot;bumped&quot;,true); }
+    svp.ws.broadcast({type:&quot;timeupdate&quot;, pos:svp.watchers[0].pos, id:svp.video.id});
+    syncAllPos();
+    plugins.event(null,arguments);
+    }
+
+    function syncAllPos() {
+    pos = [];
+    for (i in svp.watchers) {
+        if (i !== &quot;length&quot;) {
+        pos.push(svp.watchers[i].pos);
+        $($(&quot;.watcher&quot;).get(i)).children(&quot;.time&quot;).text(hhmmss(svp.watchers[i].pos,true));
+        }
+    }
+    $(&quot;#timeline&quot;).slider(&quot;option&quot;,&quot;values&quot;,pos);
+    }
+    
+    function doubleRate(el) {
+    if (Math.abs(svp.player.playbackRate) &lt; 8) {
+        svp.player.playbackRate *= 2;
+        $(el).html(&quot;&amp;times;&quot;+Math.abs(svp.player.playbackRate));
+        $(&quot;.playpause i&quot;).addClass(&quot;icon-play&quot;);
+        $(&quot;.playpause i&quot;).removeClass(&quot;icon-pause&quot;);
+    } else {
+        svp.player.playbackRate = 1;
+        $(el).html($(el).data(&quot;original-html&quot;));
+        $(&quot;.playpause i&quot;).removeClass(&quot;icon-play&quot;);
+        $(&quot;.playpause i&quot;).addClass(&quot;icon-pause&quot;);
+    }
+    }
+
+    svp.reverseSeeking = false;
+    function reverseSeek() {
+    if (svp.player.playbackRate &gt; 0) {
+        svp.reverseSeeking = false;
+        return false;
+    }
+    svp.reverseSeeking = true;
+    svp.player.currentTime += svp.player.playbackRate/2-0.5
+    setTimeout(reverseSeek,500);
+    }
+
+    function resetTransport() {
+    $(&quot;#fast-forward&quot;).html($(&quot;#fast-forward&quot;).data(&quot;original-html&quot;));
+    $(&quot;#fast-back&quot;).html($(&quot;#fast-back&quot;).data(&quot;original-html&quot;));
+    }
+
+    $(&quot;#transport .btn[id]&quot;).click(function playPause(e){
+    resetTransport();
+    resetSync();
+    if (this.id.indexOf(&quot;fast&quot;) &gt;= 0) {
+        svp.player.play();
+        if (!$(this).data(&quot;original-html&quot;)) {
+        $(this).data(&quot;original-html&quot;,$(this).html()); }
+        if (this.id.indexOf(&quot;forward&quot;) &gt;= 0) {
+        if (svp.player.playbackRate &lt; 0) {
+            svp.player.playbackRate = 1; }
+        doubleRate(this);
+        } else {
+        if (svp.player.playbackRate &gt; 0) {
+            svp.player.playbackRate = -1; }
+        doubleRate(this);
+        reverseSeek();
+        }
+    } else if (this.id.indexOf(&quot;jump&quot;) &gt;= 0) {
+        svp.player.playbackRate = 1;
+        svp.player.currentTime += ((this.id.indexOf(&quot;back&quot;)&gt;=0)?-300:300);
+        broadcastJump();
+    }
+    plugins.event(null,arguments);
+    });
+
+    function broadcastJump(from) {
+    svp.ws.broadcast({
+        id: svp.video.id,
+        type: &quot;jump&quot;,
+        pos: svp.player.currentTime,
+        from: from
+    });
+    plugins.event(null,arguments);
+    }
+
+    function broadcastStateChange() {
+    svp.ws.broadcast({
+        id: svp.video.id,
+        type: &quot;statechange&quot;,
+        paused: svp.player.paused
+    });
+    plugins.event(null,arguments);
+    }
+
+    svp.tlsize = 100;
+    function rebuildTimeline() {
+    min = max = null;
+    tlsize = svp.tlsize;
+    try {
+        min = svp.player.currentTime-10;
+        max = svp.player.currentTime+(tlsize-10);
+    } catch (err) { }
+    try {
+        min = $(&quot;#timeline&quot;).slider(&quot;option&quot;,&quot;min&quot;);
+        max = $(&quot;#timeline&quot;).slider(&quot;option&quot;,&quot;max&quot;);
+    } catch (err) { }
+    if (max-min !== tlsize) {
+        max = min+tlsize; }
+    try {
+        $(&quot;#timeline&quot;).slider(&quot;destroy&quot;);
+    } catch (err) { }
+    values = [];
+    for (i in svp.watchers) {
+        if (i !== &quot;length&quot;) {
+        values.push(svp.watchers[i].pos); } }
+    $(&quot;#timeline&quot;).slider({
+        animate: true,
+        min: min?min:-10, max: max?max:tlsize-10,
+        range: &quot;min&quot;,
+        step: 0.1,
+        values: values,
+        slide: function(e,ui) {
+        if (!$(&quot;#timeline&quot;).data(&quot;bumped&quot;) &amp;&amp; $(ui.handle).is(&quot;:first-of-type&quot;)) {
+            $(ui.handle).next(&quot;div&quot;).remove()
+            resetSync();
+            if (ui.value &lt; 0) { e.preventDefault(); return false; }
+            svp.player.currentTime = ui.value;
+            plugins.event(&quot;timelineSlide&quot;,[ui.value]);
+        } else {
+            e.preventDefault(); }
+        },
+        stop: function(e,ui) {
+        $(&quot;#timeline&quot;).data(&quot;bumped&quot;,false);
+        broadcastJump();
+        },
+        start: function(e,ui) {
+        $(&quot;#timeline&quot;).data(&quot;bumped&quot;,false);
+        }
+    }).hover(function(){
+        $(&quot;#timeline a:not(:first-of-type)&quot;).css(&quot;zIndex&quot;,1);
+    },function(){
+        $(&quot;#timeline a:not(:first-of-type)&quot;).css(&quot;zIndex&quot;,2);
+    });
+    $(&quot;#timeline&quot;).children(&quot;a&quot;).each(function(index,el){
+        node = $(el).attr(&quot;title&quot;,svp.watchers[index].name).attr(&quot;data-toggle&quot;,&quot;tooltip&quot;)
+        .tooltip().css(&quot;background-color&quot;,svp.watchers[index].color)
+        .css(&quot;background-image&quot;,&quot;none&quot;).css(&quot;opacity&quot;,(svp.watchers[index].hidden?
+                                   0.2:1));
+    });
+    $(&quot;#watchers h4 .badge-info&quot;).text(svp.watchers.length);
+    }
+    svp.rebuildTimeline = rebuildTimeline;
+
+    function resetSync() {
+    $(&quot;button.sync.active&quot;).each(function(index,el){
+        name = $(el).parent().parent().prev().prev().text();
+        svp.ws.message({
+        id: svp.video.id,
+        type: &quot;sync&quot;,
+        sync: false,
+        },name);
+        $(el).effect(&quot;highlight&quot;).btn(&quot;toggle&quot;);
+    });
+    svp.video.syncTo = 0;
+    plugins.event(null,arguments);
+    }
+
+    function addWatcher(watcher) {
+    index = svp.watcherIndices[watcher.name] = svp.watchers.push(watcher)-1;
+    colorstyles = watcher.color?&#x27; style=&quot;background-color:&#x27;+watcher.color+&#x27;;&#x27;+
+        &#x27;color:&#x27;+complementHex(watcher.color.substr(1))+&#x27;&quot;&#x27;:&quot;&quot;;
+    $(&#x27;&lt;li class=&quot;watcher you row-fluid&quot;&#x27;+colorstyles+&#x27;&gt;&#x27;+
+          &#x27;&lt;div class=&quot;span4 name&quot;&gt;&#x27;+watcher.name+&#x27;&lt;/div&gt;&#x27;+
+          &#x27;&lt;div class=&quot;span4 time&quot;&gt;Loading...&lt;/div&gt;&#x27;+
+      &#x27;&lt;div class=&quot;span4 actions&quot;&gt;&lt;div class=&quot;btn-group pull-right&quot;&gt;&#x27;+
+      &#x27;&lt;button class=&quot;btn sync&quot;&gt;&#x27;+(watcher.name==&quot;You&quot;?&quot;De-sync&quot;:&quot;Sync&quot;)+&#x27;&lt;/button&gt;&#x27;+
+          &#x27;&lt;button class=&quot;btn dropdown-toggle&quot; data-toggle=&quot;dropdown&quot;&gt;&#x27;+
+      &#x27;&lt;span class=&quot;caret&quot;&gt;&lt;/span&gt;&lt;/button&gt;&lt;ul class=&quot;dropdown-menu&quot;&gt;&#x27;+
+      &#x27;&lt;li&gt;&lt;a href=&quot;#&quot; class=&quot;watcher-hide&quot;&gt;Darken&lt;/a&gt;&lt;/li&gt;&#x27;+
+          &#x27;&lt;/ul&gt;&lt;/div&gt;&lt;/div&gt;&lt;/li&gt;&#x27;).appendTo(&quot;#watchers&quot;);
+    $(&quot;a.watcher-hide&quot;).eq(index).click(function(e) {
+        e.preventDefault();
+        index = $(this).data(&quot;watcher-index&quot;);
+        $(this).parent().toggleClass(&quot;active&quot;)
+        $(&quot;.watcher&quot;).eq(index).toggleClass(&quot;hidden-watcher&quot;);
+        svp.watchers[index].hidden = !svp.watchers[index].hidden;
+        svp.rebuildTimeline();
+    }).data(&quot;watcher-index&quot;,index);
+    $(&quot;button.sync&quot;).eq(index).btn().click(function(e) {
+        resetSync();
+        $(this).btn(&#x27;toggle&#x27;);
+        index = $(this).data(&quot;watcher-index&quot;);
+        svp.video.syncTo = index;
+        if (index === 0) {
+        $(this).btn(&#x27;toggle&#x27;);
+        return false; }
+        svp.player.currentTime = svp.watchers[index].pos;
+        svp.ws.message({
+        id: svp.video.id,
+        type: &quot;sync&quot;,
+        sync: true
+        },svp.watchers[index].name);
+    }).data(&quot;watcher-index&quot;,index);
+    rebuildTimeline()
+    plugins.event(null,arguments);
+    }
+    svp.addWatcher = addWatcher;
+    
+    function loadVideo(url,id) {
+    video = {};
+    video.url = url;
+    video.id = id?id:hashRandom(video.url).toString(36);
+    video.chats = [];
+    if (video.id == &quot;0&quot;) {
+        return false; }
+    try {
+        $(&quot;.container-fluid.hide&quot;).removeClass(&quot;hide&quot;).show();
+        $(&quot;#volume&quot;).show()
+        .position({&quot;my&quot;:&quot;center bottom&quot;,&quot;at&quot;:&quot;center&quot;,&quot;of&quot;:$(&quot;#volume&quot;).prev()}).hide();
+    } catch (err) {}
+    svp.video = video;
+    svp.watchers = [];
+    svp.watcherIndices = {};
+    $(&quot;#link&quot;).val(location.origin+&quot;/#join:&quot;+svp.video.id);
+    $(&quot;.watcher&quot;).remove()
+    $(&quot;#player&quot;).attr(&quot;src&quot;,svp.video.url);
+    svp.player.load();
+    $(&quot;#current-url a&quot;).attr(&quot;href&quot;,svp.video.url).text(svp.video.url).click(
+        function(e){ e.preventDefault(); });
+    svp.addWatcher({
+        name: &quot;You&quot;,
+        pos: 0,
+        color: null
+    });
+    plugins.event(null,arguments);
+    return true;
+    }
+    svp.loadVideo = loadVideo;
+    $(&quot;#load-video-modal .modal-footer .btn-info&quot;).click(function(e) {
+    if (!svp.loadVideo($(&quot;#video-url&quot;).val())) {
+        e.preventDefault();
+    } else { location.assign(&quot;#&quot;); }
+    });
+
+    blackbg = &quot;body, .well, .progress, #chat-frame, #chat-entry, #current-url a&quot;;
+    svp.resetPlayState = function resetPlayState() {
+    $(&quot;.playpause i&quot;).removeClass(&quot;icon-pause&quot;);
+    $(&quot;.playpause i&quot;).addClass(&quot;icon-play&quot;);
+    $(&quot;#info .progress-default&quot;).removeClass(&quot;progress-striped active&quot;);
+    plugins.event(null,arguments);
+    }
+    svp.lightsOn = function lightsOn() {
+    /* Turn on the lights... */
+    $(blackbg).removeClass(&quot;blackbg muted&quot;,1000).removeClass(&quot;blackbg muted&quot;);
+    $(&quot;.btn&quot;).removeClass(&quot;btn-inverse&quot;,500);
+    $(&quot;.btn i&quot;).delay(300).removeClass(&quot;icon-white&quot;,1);
+    $(&quot;#lights-text&quot;).text(&quot;Out&quot;);
+    svp.lightsAreOn = true;
+    /* --- */
+    plugins.event(null,arguments);
+    }
+    svp.lightsOff = function lightsOff() {
+    /* Turn out the lights... */
+    $(blackbg).stop(true,true).addClass(&quot;blackbg muted&quot;);
+    $(&quot;.btn&quot;).stop(true,true).addClass(&quot;btn-inverse&quot;);
+    $(&quot;.btn i&quot;).stop(true,true).addClass(&quot;icon-white&quot;);
+    $(&quot;#lights-text&quot;).text(&quot;On&quot;);
+    svp.lightsAreOn = false;
+    /* --- */
+    plugins.event(null,arguments);
+    }
+    svp.lightsAreOn = true;
+
+    function stateChange(from) {
+    resetTransport();
+    if (!from) {
+        resetSync(); }
+    if (svp.player.playbackRate !== 1) {
+        svp.player.playbackRate = 1;
+        $(&quot;.playpause i&quot;).toggleClass(&quot;icon-pause icon-play&quot;);
+        broadcastJump();
+        return false; }
+    svp.resetPlayState();
+    if (svp.player.readyState === 0) { svp.player.load(); console.log(&quot;Loading...&quot;); }
+    if (svp.player.paused) {
+        svp.lightsOff();
+        svp.player.play();
+        $(&quot;#info .progress-default&quot;).addClass(&quot;progress-striped active&quot;);
+        $(&quot;.playpause i&quot;).toggleClass(&quot;icon-pause icon-play&quot;);
+    } else {
+        svp.player.pause();
+    }
+    broadcastStateChange(from);
+    plugins.event(null,arguments);
+    }
+
+    $(&quot;.playpause, #player&quot;).click(function(){ stateChange(); });
+    $(&quot;#lights-control&quot;).click(function(){
+    (svp.lightsAreOn?svp.lightsOff:svp.lightsOn)();
+    });
+
+    svp.player = $(&quot;#player&quot;).get(0);
+    svp.player.addEventListener(&quot;timeupdate&quot;,syncPos);
+    svp.player.addEventListener(&quot;ended&quot;,svp.resetPlayState);
+
+    function receiveChat(from,message,time) {
+    if (!message) { return false; }
+    colorstyle = &#x27;background-color:&#x27;+svp.watchers[svp.watcherIndices[from]].color;
+    timestamp = time?time:new Date().getTime()/1000;
+    svp.video.chats.push({from:from,message:message,time:timestamp});
+    $(&quot;#chat-messages&quot;).append(&#x27;&lt;div class=&quot;media&quot;&gt;&#x27;+
+                   &#x27;&lt;a class=&quot;pull-left chat-icon&quot; style=&quot;&#x27;+colorstyle+&#x27;&quot;&gt;&lt;/a&gt;&#x27;+
+                   &#x27;&lt;div class=&quot;media-body&quot;&gt;&#x27;+
+                   &#x27;&lt;div class=&quot;pull-right chat-time text-info&quot; data-livestamp=&quot;&#x27;+
+                   timestamp+&#x27;&quot;&gt;&lt;/div&gt;&#x27;+
+                   &#x27;&lt;h5 class=&quot;media-heading&quot;&gt;&#x27;+from+&#x27;&lt;/h5&gt;&#x27;+
+                   &#x27;&lt;div class=&quot;chat-message&quot;&gt;&#x27;+message+&#x27;&lt;/div&gt;&#x27;+
+                   &#x27;&lt;/div&gt;&lt;/div&gt;&#x27;);
+    $(&quot;#chat-messages&quot;).scrollTop($(&quot;#chat-messages&quot;).prop(&quot;scrollHeight&quot;));
+    }
+    $(&quot;#chat-input&quot;).keyup(function(e){
+    if (e.which == 13) {
+        svp.ws.broadcast({
+        type: &quot;chat&quot;,
+        id: svp.video.id,
+        message: $(&quot;#chat-input&quot;).val()
+        });
+        receiveChat(&quot;You&quot;,$(&quot;#chat-input&quot;).val());
+        $(&quot;#chat-input&quot;).val(&#x27;&#x27;);
+    }
+    plugins.event(null,arguments);
+    });
+
+    svp.ws = WSChat();
+    svp.ws.onerror = function wsError(code,message) {
+    console.log(code,message);
+    if (code == 305) {
+        location.assign(&quot;#error:nameexists&quot;);
+        location.reload();
+    }
+    plugins.event(null,arguments);
+    };
+    svp.ws.onmessage = function wsMessage(data,from,e) {
+    if (data.type == &quot;info&quot;) {
+        processChats = false;
+        if (!svp.video || svp.video.url !== data.url) {
+        svp.player.addEventListener(&quot;canplay&quot;,function() {
+            console.log(&quot;Canplay&quot;);
+            svp.player.currentTime = data.mypos; });
+        svp.loadVideo(data.url,svp.joinid);
+        if (data.paused !== svp.player.paused) { stateChange(); }
+        processChats = true;
+        }
+        if (!(name in svp.watcherIndices)) {
+        addWatcher({
+            name: from,
+            pos: data.mypos,
+            color: randomColor()
+        });
+        }
+        if (processChats) {
+        for (i in data.chats) {
+            if (i !== &quot;length&quot;) {
+            chatfrom = data.chats[i].from;
+            if (chatfrom == &quot;You&quot;) { chatfrom = from; }
+            if (chatfrom == sessionStorage.svpUsername) { chatfrom = &quot;You&quot;; }
+            try {
+                receiveChat(chatfrom,data.chats[i].message,data.chats[i].time);
+            } catch (err) { }
+            }
+        }
+        }
+    } else if (data.type == &quot;sync&quot;) {
+        console.log(from);
+        $(&quot;.watcher&quot;).eq(svp.watcherIndices[from]).effect(&quot;highlight&quot;)
+        .attr(&quot;title&quot;,data.sync?&quot;Synced to you&quot;:&quot;No longer synced to you&quot;);
+    }
+    plugins.event(null,arguments);
+    };
+    svp.ws.onbroadcast = function wsBroadcast(data,from,e) {
+    if (data.id != ((svp.video&amp;&amp;svp.video.id)?svp.video.id:svp.joinid)) { return false; }
+    if (data.type == &quot;join&quot;) {
+        svp.ws.message({
+        type: &quot;info&quot;,
+        url: svp.video.url,
+        id: svp.video.id,
+        chats: svp.video.chats,
+        paused: svp.player.paused,
+        mypos: svp.watchers[0].pos
+        },from);
+        if (!(from in svp.watcherIndices)) {
+        svp.addWatcher({
+            name: from,
+            pos: 0,
+            color: randomColor()
+        });
+        }
+    } else if (data.type == &quot;timeupdate&quot;) {
+        try {
+        svp.watchers[svp.watcherIndices[from]].pos = data.pos;
+        syncAllPos();
+        } catch (err) { }
+    } else if (data.type == &quot;jump&quot;) {
+        try {
+        if (svp.watcherIndices[from] === svp.video.syncTo) {
+            if (!data.from || svp.watcherIndices[data.from] !== svp.video.syncTo) {
+            svp.player.currentTime = data.pos;
+            broadcastJump(from);
+            }
+        }
+        } catch (err) { }
+    } else if (data.type == &quot;statechange&quot;) {
+        try {
+        if (svp.watcherIndices[from] === svp.video.syncTo) {
+            if (data.paused !== svp.player.paused) { stateChange(from); }
+        }
+        } catch (err) { }
+    } else if (data.type == &quot;chat&quot;) {
+        receiveChat(from,data.message);
+    }
+    plugins.event(null,arguments);
+    };
+    svp.ws.onquit = function wsQuit(who,e) {
+    try {
+        index = svp.watcherIndices[who];
+    } catch (err) { return false; }
+    if (!index) { return false; }
+    console.log(index,svp.watchers[index],who);
+    if (index === svp.video.syncTo) {
+        resetSync();
+    } else if (index &lt; svp.video.syncTo) {
+        svp.video.syncTo -= 1; }
+    svp.watchers.splice(index,1);
+    for (i in svp.watcherIndices) {
+        if (svp.watcherIndices[i] &gt; index) {
+        svp.watcherIndices[i] -= 1; }
+    }
+    delete svp.watcherIndices[who];
+    $(&quot;.watcher&quot;).eq(index).remove();
+    rebuildTimeline();
+    plugins.event(null,arguments);
+    }    
+
+    function watcherExists(name) {
+    for (i in svp.watchers) {
+        if (i !== &quot;length&quot;) {
+        if (svp.watchers[i].name == name) {
+            return true;
+        }
+        }
+    }
+    }
+
+    function init(name) {
+    localStorage.svpUsername = name
+    $(&quot;#load-video-modal&quot;).modal(&#x27;show&#x27;);
+    if (location.hash.substr(1,5) == &quot;join:&quot;) {
+        $(&quot;#load-video-modal&quot;).modal(&#x27;hide&#x27;);
+        svp.ws.onconnected = function(e) {
+        svp.joinid = location.hash.substr(6);
+        svp.ws.broadcast({type:&quot;join&quot;,id:svp.joinid}); }
+    }
+    svp.ws.init(&quot;ws://&quot;+location.host+&quot;/wschat&quot;,name);
+    plugins.event(null,arguments);
+    }
+    svp.initializeClient = init;
+    $(&quot;#get-link-modal&quot;).modal({show:true}).modal(&quot;show&quot;).modal(&quot;hide&quot;);
+    $(&quot;#set-name-modal&quot;).modal({
+    backdrop: &quot;static&quot;,
+    keyboard: false,
+    show: true
+    }).modal(&#x27;show&#x27;);
+    
+    if (location.hash.substr(1,10) == &quot;error:name&quot;) {
+    $(&quot;#nickname&quot;).val(localStorage.svpUsername);
+    textel = $(&quot;#set-name-modal .alert-error&quot;).removeClass(&quot;hide&quot;).children(&quot;span&quot;);
+    error = location.hash.substr(7);
+    if (error == &quot;nameexists&quot;) {
+        textel.html(&quot;Someone with that username is already connected to the server!&lt;br&gt;Please use a different username.&quot;);
+    } else {
+        textel.html(&quot;A Username error occured! Please try again.&quot;);
+    }
+    } else if (localStorage.svpUsername) {
+    $(&quot;#set-name-modal&quot;).modal(&#x27;hide&#x27;);
+    init(localStorage.svpUsername);
+    }
+    $(&quot;#set-name-modal .modal-footer .btn&quot;).click(function(){
+    name = $(&quot;#nickname&quot;).val();
+    if (name) {
+        $(&quot;#set-name-modal&quot;).modal(&quot;hide&quot;);
+        init(name);
+    }
+    })
+
+    plugins.init(svp);
+    for (i=0;i&lt;plugins.length;i++) {
+    new plugins[i](); }
+
+});
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
