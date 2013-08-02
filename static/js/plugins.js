@@ -20,26 +20,34 @@ plugins = [];
 plugins.loaded = false;
 
 /**
-   Sets up additional plugin machinery.
-   
-   I'm not really sure why this is necessary...
+   Holds arrays of event callbacks.
+   @property handlers
+   @private
+*/
+plugins.handlers = {};
+/**
+   Holds arrays of editor callbacks.
+   @property handlers
+   @private
+*/
+plugins.editors = {};
+/**
+   Holds arrays of string filters.
+   @property filters
+   @private
+*/
+plugins.filters = {};
+
+/**
+   Loads all preset plugins and tells future plugins to load immediately.
    @method init
-   @param {Mixed} it The one and only IT!
-   @deprecated
+   @param {Mixed} it This argument is ignored at the moment
+   @beta
 */
 plugins.init = function (it) {
-    /**
-       Holds arrays of event callbacks.
-       @property handlers
-       @private
-     */
-    plugins.handlers = {};
-    /**
-       Holds arrays of string filters.
-       @property filters
-       @private
-     */
-    plugins.filters = {};
+    for (i=0;i<plugins.length;i++) {
+	new plugins[i](); }
+    plugins.loaded = true;
 };
 
 /**
@@ -70,6 +78,24 @@ plugins.filter = function(message) {
 	// Do regex stuff here...
     }
     return message
+}
+/**
+   Core code should call this to allow plugins to make changes to arbitrary objects
+   or change default behaviors.
+   @method editor
+   @param {Mixed} type Either a function (whose name will then be used) or a string
+   @param {Mixed} object The object to edit
+   @return {Mixed} The (possibly) edited object
+*/
+plugins.editor = function(type,object) {
+    if (typeof type == "function") {
+	type = type.name; }
+    if (plugins.editors[type]) {
+	for (i=0;i<plugins.editors[type].length;i++) {
+	    object = plugins.editors[type][i](object,type);
+	}
+    }
+    return object;
 }
 
 /**
@@ -114,12 +140,38 @@ Plugin = function (func,proto) {
 	new func(); }
 };
 Plugin.prototype = {
+    /**
+       Registers a event handler with the plugin API.
+       @method register
+       @param {String} type The event type to register with
+       @param {Function} callback The method to register. It will be called in the context of the plugin.
+       @return {Number} The registration ID, can be used to unregister the handler later.
+    */
     register: function(type,callback) {
-	plugins.handlers[type] || plugins.handlers[type] = [];
-	return plugins.handlers[type].push($.proxy(callback,this));
+	this._register("handler",type,callback);
     },
+    /**
+       Registers a event handler with the plugin API.
+       @method useEditor
+       @param {String} type The edit type to register
+       @param {Function} callback The method to register. It will be called in the context of the plugin.
+       @return {Number} The registration ID, can be used to unregister the editor later.
+    */
+    useEditor: function(type,callback) {
+	this._register("editor",type,callback);
+    },
+    /**
+       Registers a string filter with the plugin API.
+       @method useFilter
+       @param {RegExp} regex This filter will only be applied if the regex matches
+       @param {Function} callback The method to register. It will be called in the context of the plugin.
+       @return {Number} The registration ID, can be used to unregister the filter later. (Note: unregistering is not implemented yet.)
+    */
     useFilter: function(regex,callback) {
-	plugins.handlers[regex] || plugins.handlers[regex] = [];
-	return plugins.handlers[regex].push($.proxy(callback,this));
+	this._register("filter",regex,callback);
+    },
+    _register: function(type,f,c) {
+	plugins[type+"s"][f] || plugins[type+"s"][f] = [];
+	return plugins[type+"s"][f].push($.proxy(c,this));
     }
 };

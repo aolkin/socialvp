@@ -412,6 +412,11 @@ $(function(){
        @return {Mixed} true (upon successful completion)
      */
     function loadVideo(url,id) {
+	/**
+	   Allows editing of the video url before loading it into the video element.
+	   @event videoUrl
+	   @param {String} url The original URL
+	*/
 	video = {};
 	video.url = url;
 	video.id = id?id:hashRandom(video.url).toString(36);
@@ -428,7 +433,7 @@ $(function(){
 	svp.watcherIndices = {};
 	$("#link").val(location.origin+"/#join:"+svp.video.id);
 	$(".watcher").remove()
-	$("#player").attr("src",svp.video.url);
+	$("#player").attr("src",plugins.editor("videoUrl",svp.video.url));
 	svp.player.load();
 	$("#current-url a").attr("href",svp.video.url).text(svp.video.url).click(
 	    function(e){ e.preventDefault(); });
@@ -588,8 +593,15 @@ $(function(){
        @param {String} from The user who sent the message
        @param {Event} e The raw event
     */
+    /**
+       Recieves private WebSocket plugin messages.
+       @event plugin{type}
+       @param {Mixed} data Depends on the plugin that sent the message
+    */
     svp.ws.onmessage = function wsMessage(data,from,e) {
-	if (data.type == "info") {
+	if (data.type == "plugin") {
+	    plugins.event("plugin"+data.data.type,data.data);
+	} else if (data.type == "info") {
 	    processChats = false;
 	    if (!svp.video || svp.video.url !== data.url) {
 		svp.player.addEventListener("canplay",function() {
@@ -632,9 +644,23 @@ $(function(){
        @param {String} from The user who sent the message
        @param {Event} e The raw event
     */
+    /**
+       Recieves special WSChat plugin broadcasts that are independent of the current video ID.
+       @event pluginGlobal{type}
+       @param {Mixed} data Depends on the plugin that sent the message
+    */
+    /**
+       Recieves WSChat plugin broadcast messages.
+       @event pluginBroadcast{type}
+       @param {Mixed} data Depends on the plugin that sent the message
+    */
     svp.ws.onbroadcast = function wsBroadcast(data,from,e) {
+	if (data.type == "pluginGlobal") {
+	    plugins.event("pluginGlobal"+data.data.type,data.data); }
 	if (data.id != ((svp.video&&svp.video.id)?svp.video.id:svp.joinid)) { return false; }
-	if (data.type == "join") {
+	if (data.type == "plugin") {
+	    plugins.event("pluginBroadcast"+data.data.type,data.data);
+	} else if (data.type == "join") {
 	    svp.ws.message({
 		type: "info",
 		url: svp.video.url,
@@ -713,8 +739,13 @@ $(function(){
     }
 
     /**
+       Called on initialization of the WSChat client.
+       @event init
+       @param {String} name The username that the local client will save and use
+    */
+    /**
        Initializes the WSChat client.
-       @method init
+       @method initializeClient
        @param {String} name The username that the local client will save and use
     */
     function init(name) {
@@ -730,7 +761,7 @@ $(function(){
 	plugins.event(null,arguments);
     }
     svp.initializeClient = init;
-    $("#get-link-modal").modal({show:true}).modal("show").modal("hide");
+    //$("#get-link-modal").modal({show:true}).modal("show").modal("hide");
     $("#set-name-modal").modal({
 	backdrop: "static",
 	keyboard: false,
@@ -759,8 +790,5 @@ $(function(){
     })
 
     plugins.init(svp);
-    for (i=0;i<plugins.length;i++) {
-	new plugins[i](); }
-    plugins.loaded = true;
 
 });

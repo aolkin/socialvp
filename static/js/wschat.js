@@ -16,16 +16,16 @@ WSChat = function() {
 	/**
 	   The number of times this client has tried to connect to the server
 	   since the last success.
-	   @property retries
-	   @private
+	   @attribute retries
+	   @readOnly
 	   @type Number
 	   @default 0
 	*/
 	retries: 0,
 	/**
 	   Whether this client is currently connected.
-	   @property closed
-	   @protected
+	   @attribute closed
+	   @readOnly
 	   @type Boolean
 	   @default true
 	*/
@@ -37,6 +37,7 @@ WSChat = function() {
 	   @default false
 	*/
 	log: false,
+
 	/**
 	   Initializes a WSChat client and connects to the specified server.
 	   @method init
@@ -51,6 +52,13 @@ WSChat = function() {
 	    this.url = url;
 	    this.name = name;
 	    this.noretry = noretry===undefined?this.noretry:noretry;
+	    /**
+	       The underlying WebSocket instance that handles the raw communication.
+	       @property socket
+	       @private
+	       @type WebSocket
+	       @default new WebSocket(url);
+	    */
 	    this.socket = new WebSocket(url);
 	    this.socket.wschat = this;
 	    this.socket.onopen = function(e){
@@ -181,7 +189,7 @@ WSChat = function() {
 	onclose: function(){},
 	/**
 	   Called on a successful connection and identification to the server.
-	   @event onerror
+	   @event onconnected
 	   @param {String} message The server welcome message (?)
 	*/
 	onconnected: function(){}
