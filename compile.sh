@@ -1,5 +1,10 @@
 #!/bin/bash
 
 js=static/js
+args="$js/moment.min.js $js/livestamp.min.js $js/wschat.js $js/plugins.js $js/my.js --screw-ie8 -c hoist_funs=false,unused=false -o static/js/index.min.js"
 
-uglifyjs $js/moment.min.js $js/livestamp.min.js $js/wschat.js $js/plugins.js $js/localvideo.js $js/my.js --screw-ie8 -c -m -o static/js/index.min.js
+if [ "$TERM" == "dumb" ]; then
+    uglifyjs $args 2> /dev/null
+else
+    uglifyjs $args
+fi

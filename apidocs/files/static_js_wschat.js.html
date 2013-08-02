@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>static/js/wschat.js - SVP API</title>
+    <title>static/js/wschat.js - SocialVideoPlayer API</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -15,11 +15,16 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http://baryon5.github.io/socialvp/logo.png" title="SVP API"></h1>
+                <h1>
+		  <img src="http://baryon5.github.io/socialvp/logo.png" width="64" style="float:left">
+		  <div style="padding-top: 8px;">SocialVideoPlayer API<br />
+		    <span style="font-size:0.8em">The API for the Social Video Player, for use in developing plugins.</span>
+		  </div>
+		</h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: v0.9</em>
+            <em>API Docs for v1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -116,16 +121,16 @@ WSChat = function() {
     /**
        The number of times this client has tried to connect to the server
        since the last success.
-       @property retries
-       @private
+       @attribute retries
+       @readOnly
        @type Number
        @default 0
     */
     retries: 0,
     /**
        Whether this client is currently connected.
-       @property closed
-       @protected
+       @attribute closed
+       @readOnly
        @type Boolean
        @default true
     */
@@ -137,6 +142,7 @@ WSChat = function() {
        @default false
     */
     log: false,
+
     /**
        Initializes a WSChat client and connects to the specified server.
        @method init
@@ -151,6 +157,13 @@ WSChat = function() {
         this.url = url;
         this.name = name;
         this.noretry = noretry===undefined?this.noretry:noretry;
+        /**
+           The underlying WebSocket instance that handles the raw communication.
+           @property socket
+           @private
+           @type WebSocket
+           @default new WebSocket(url);
+        */
         this.socket = new WebSocket(url);
         this.socket.wschat = this;
         this.socket.onopen = function(e){
@@ -281,7 +294,7 @@ WSChat = function() {
     onclose: function(){},
     /**
        Called on a successful connection and identification to the server.
-       @event onerror
+       @event onconnected
        @param {String} message The server welcome message (?)
     */
     onconnected: function(){}

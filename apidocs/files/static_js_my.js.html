@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>static/js/my.js - SVP API</title>
+    <title>static/js/my.js - SocialVideoPlayer API</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -15,11 +15,16 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="../assets/css/logo.png" title="SVP API"></h1>
+                <h1>
+		  <img src="http://baryon5.github.io/socialvp/logo.png" width="64" style="float:left">
+		  <div style="padding-top: 8px;">SocialVideoPlayer API<br />
+		    <span style="font-size:0.8em">The API for the Social Video Player, for use in developing plugins.</span>
+		  </div>
+		</h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: v0.9</em>
+            <em>API Docs for v1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -43,13 +48,21 @@
             
                 <li><a href="../classes/Plugin.html">Plugin</a></li>
             
+                <li><a href="../classes/plugins.html">plugins</a></li>
+            
                 <li><a href="../classes/svp.html">svp</a></li>
+            
+                <li><a href="../classes/WSChat.html">WSChat</a></li>
             
             </ul>
 
             <ul id="api-modules" class="apis modules">
             
+                <li><a href="../modules/PluginAPI.html">PluginAPI</a></li>
+            
                 <li><a href="../modules/SVP.html">SVP</a></li>
+            
+                <li><a href="../modules/WSChat.html">WSChat</a></li>
             
             </ul>
         </div>
@@ -191,7 +204,7 @@ $(function(){
     /**
        Called when the volume is adjusted using the slider
        (which should be the only way for the volume to change).
-       *For Plugin use, see {{#crossLink &quot;Plugin/syncVolume:event&quot;}}here{{/crossLink}}.*
+       *For Plugin use, see {{#crossLink &quot;svp/syncVolume:event&quot;}}here{{/crossLink}}.*
        @method syncVolume
        @param {Event} e The event object
        @param {Object} ui The jQueryUI second callback argument
@@ -200,7 +213,6 @@ $(function(){
        Fired when the volume is adjusted.
        @event syncVolume
        @param {Number} volume The new volume as a decimal
-       @for Plugin
     */
     function syncVolume(e,ui) {
     svp.player.volume = ui.value/100;
@@ -234,8 +246,7 @@ $(function(){
        Called on video timeupdate, it takes care of updating all the various counters,
        timelines, etc, as well as broadcasting the update.
        @method syncPos
-       @for svp
-       @param {Event} The event object
+       @param {Event} e The event object
     */
     function syncPos(e) {
     svp.watchers[0].pos = Math.round(svp.player.currentTime*10)/10;
@@ -317,7 +328,12 @@ $(function(){
     $(&quot;#fast-back&quot;).html($(&quot;#fast-back&quot;).data(&quot;original-html&quot;));
     }
 
-    $(&quot;#transport .btn[id]&quot;).click(function playPause(e){
+    /**
+       Handles skip/ff controls.
+       @method transportClick
+       @param {Event} e The Event object
+     */
+    $(&quot;#transport .btn[id]&quot;).click(function transportClick(e){
     resetTransport();
     resetSync();
     if (this.id.indexOf(&quot;fast&quot;) &gt;= 0) {
@@ -342,6 +358,11 @@ $(function(){
     plugins.event(null,arguments);
     });
 
+    /**
+       Broadcasts information about a jump.
+       @method broadcastJump
+       @param {String} from The username from which the jump originated
+     */
     function broadcastJump(from) {
     svp.ws.broadcast({
         id: svp.video.id,
@@ -352,6 +373,10 @@ $(function(){
     plugins.event(null,arguments);
     }
 
+    /**
+       Broadcasts information about a state (playing/paused) change.
+       @method broadcastStateChange
+     */
     function broadcastStateChange() {
     svp.ws.broadcast({
         id: svp.video.id,
@@ -420,6 +445,10 @@ $(function(){
     }
     svp.rebuildTimeline = rebuildTimeline;
 
+    /**
+       Called to reset who is being synced to when the local user takes an action.
+       @method resetSync
+     */
     function resetSync() {
     $(&quot;button.sync.active&quot;).each(function(index,el){
         name = $(el).parent().parent().prev().prev().text();
@@ -434,6 +463,11 @@ $(function(){
     plugins.event(null,arguments);
     }
 
+    /**
+       Adds all of the DOM elements and configuration for a new &quot;watcher&quot;.
+       @method addWatcher
+       @param {Object} watcher The &quot;watcher&quot; object to add
+     */
     function addWatcher(watcher) {
     index = svp.watcherIndices[watcher.name] = svp.watchers.push(watcher)-1;
     colorstyles = watcher.color?&#x27; style=&quot;background-color:&#x27;+watcher.color+&#x27;;&#x27;+
@@ -475,7 +509,19 @@ $(function(){
     }
     svp.addWatcher = addWatcher;
     
+    /**
+       Loads a new video into the DOM and resets objects.
+       @method loadVideo
+       @param {String} url The video URL
+       @param {String} id A semi-random ID for identifying this viewing session
+       @return {Mixed} true (upon successful completion)
+     */
     function loadVideo(url,id) {
+    /**
+       Allows editing of the video url before loading it into the video element.
+       @event videoUrl
+       @param {String} url The original URL
+    */
     video = {};
     video.url = url;
     video.id = id?id:hashRandom(video.url).toString(36);
@@ -492,7 +538,7 @@ $(function(){
     svp.watcherIndices = {};
     $(&quot;#link&quot;).val(location.origin+&quot;/#join:&quot;+svp.video.id);
     $(&quot;.watcher&quot;).remove()
-    $(&quot;#player&quot;).attr(&quot;src&quot;,svp.video.url);
+    $(&quot;#player&quot;).attr(&quot;src&quot;,plugins.editor(&quot;videoUrl&quot;,svp.video.url));
     svp.player.load();
     $(&quot;#current-url a&quot;).attr(&quot;href&quot;,svp.video.url).text(svp.video.url).click(
         function(e){ e.preventDefault(); });
@@ -516,30 +562,38 @@ $(function(){
     $(&quot;.playpause i&quot;).removeClass(&quot;icon-pause&quot;);
     $(&quot;.playpause i&quot;).addClass(&quot;icon-play&quot;);
     $(&quot;#info .progress-default&quot;).removeClass(&quot;progress-striped active&quot;);
-    plugins.event(null,arguments);
     }
+    /**
+       Turns the lights on!
+       @method lightsOn
+     */
     svp.lightsOn = function lightsOn() {
-    /* Turn on the lights... */
     $(blackbg).removeClass(&quot;blackbg muted&quot;,1000).removeClass(&quot;blackbg muted&quot;);
     $(&quot;.btn&quot;).removeClass(&quot;btn-inverse&quot;,500);
     $(&quot;.btn i&quot;).delay(300).removeClass(&quot;icon-white&quot;,1);
     $(&quot;#lights-text&quot;).text(&quot;Out&quot;);
     svp.lightsAreOn = true;
-    /* --- */
     plugins.event(null,arguments);
     }
+    /**
+       Turns the lights out!
+       @method lightsOff
+     */
     svp.lightsOff = function lightsOff() {
-    /* Turn out the lights... */
     $(blackbg).stop(true,true).addClass(&quot;blackbg muted&quot;);
     $(&quot;.btn&quot;).stop(true,true).addClass(&quot;btn-inverse&quot;);
     $(&quot;.btn i&quot;).stop(true,true).addClass(&quot;icon-white&quot;);
     $(&quot;#lights-text&quot;).text(&quot;On&quot;);
     svp.lightsAreOn = false;
-    /* --- */
     plugins.event(null,arguments);
     }
     svp.lightsAreOn = true;
 
+    /**
+       Called when a play/pause event is needed, for whatever reason.
+       @method stateChange
+       @param {String} [from] The username of the person who initiated the state change
+     */
     function stateChange(from) {
     resetTransport();
     if (!from) {
@@ -563,7 +617,15 @@ $(function(){
     plugins.event(null,arguments);
     }
 
-    $(&quot;.playpause, #player&quot;).click(function(){ stateChange(); });
+    /**
+       Called when the player or a playpause button is clicked.
+       @method playPause
+       @param {Event} e The click event
+    */
+    $(&quot;.playpause, #player&quot;).click(function playPause(e){
+    stateChange();
+    plugins.event(null,arguments);
+    });
     $(&quot;#lights-control&quot;).click(function(){
     (svp.lightsAreOn?svp.lightsOff:svp.lightsOn)();
     });
@@ -572,8 +634,16 @@ $(function(){
     svp.player.addEventListener(&quot;timeupdate&quot;,syncPos);
     svp.player.addEventListener(&quot;ended&quot;,svp.resetPlayState);
 
+    /**
+       Called to process and display a chat message.
+       @method recieveChat
+       @param {String} from The username of the person who sent the message (&quot;You&quot; if the local user)
+       @param {String} message The message he or she sent
+       @param [time] The timestamp for the message (if left out the current time is used)
+     */
     function receiveChat(from,message,time) {
     if (!message) { return false; }
+    message = plugins.filter(message,from,time);
     colorstyle = &#x27;background-color:&#x27;+svp.watchers[svp.watcherIndices[from]].color;
     timestamp = time?time:new Date().getTime()/1000;
     svp.video.chats.push({from:from,message:message,time:timestamp});
@@ -586,6 +656,7 @@ $(function(){
                    &#x27;&lt;div class=&quot;chat-message&quot;&gt;&#x27;+message+&#x27;&lt;/div&gt;&#x27;+
                    &#x27;&lt;/div&gt;&lt;/div&gt;&#x27;);
     $(&quot;#chat-messages&quot;).scrollTop($(&quot;#chat-messages&quot;).prop(&quot;scrollHeight&quot;));
+    plugins.event(null,arguments);
     }
     $(&quot;#chat-input&quot;).keyup(function(e){
     if (e.which == 13) {
@@ -597,10 +668,21 @@ $(function(){
         receiveChat(&quot;You&quot;,$(&quot;#chat-input&quot;).val());
         $(&quot;#chat-input&quot;).val(&#x27;&#x27;);
     }
-    plugins.event(null,arguments);
     });
 
+    /**
+       The WSChat instance responsible for transmitting data between clients.
+       @property ws
+       @type WSChat
+       @default WSChat();
+     */
     svp.ws = WSChat();
+    /**
+       Handles WSChat errors.
+       @method wsError
+       @param {Number} code The WSChat error code
+       @param {String} message A friendly error message
+    */
     svp.ws.onerror = function wsError(code,message) {
     console.log(code,message);
     if (code == 305) {
@@ -609,8 +691,22 @@ $(function(){
     }
     plugins.event(null,arguments);
     };
+    /**
+       Handles WSChat &quot;messages&quot;.
+       @method wsMessage
+       @param {Object} data The message data 
+       @param {String} from The user who sent the message
+       @param {Event} e The raw event
+    */
+    /**
+       Recieves private WebSocket plugin messages.
+       @event plugin{type}
+       @param {Mixed} data Depends on the plugin that sent the message
+    */
     svp.ws.onmessage = function wsMessage(data,from,e) {
-    if (data.type == &quot;info&quot;) {
+    if (data.type == &quot;plugin&quot;) {
+        plugins.event(&quot;plugin&quot;+data.data.type,data.data);
+    } else if (data.type == &quot;info&quot;) {
         processChats = false;
         if (!svp.video || svp.video.url !== data.url) {
         svp.player.addEventListener(&quot;canplay&quot;,function() {
@@ -646,9 +742,30 @@ $(function(){
     }
     plugins.event(null,arguments);
     };
+    /**
+       Handles WSChat &quot;broadcasts&quot;.
+       @method wsBroadcast
+       @param {Object} data The message data 
+       @param {String} from The user who sent the message
+       @param {Event} e The raw event
+    */
+    /**
+       Recieves special WSChat plugin broadcasts that are independent of the current video ID.
+       @event pluginGlobal{type}
+       @param {Mixed} data Depends on the plugin that sent the message
+    */
+    /**
+       Recieves WSChat plugin broadcast messages.
+       @event pluginBroadcast{type}
+       @param {Mixed} data Depends on the plugin that sent the message
+    */
     svp.ws.onbroadcast = function wsBroadcast(data,from,e) {
+    if (data.type == &quot;pluginGlobal&quot;) {
+        plugins.event(&quot;pluginGlobal&quot;+data.data.type,data.data); }
     if (data.id != ((svp.video&amp;&amp;svp.video.id)?svp.video.id:svp.joinid)) { return false; }
-    if (data.type == &quot;join&quot;) {
+    if (data.type == &quot;plugin&quot;) {
+        plugins.event(&quot;pluginBroadcast&quot;+data.data.type,data.data);
+    } else if (data.type == &quot;join&quot;) {
         svp.ws.message({
         type: &quot;info&quot;,
         url: svp.video.url,
@@ -689,6 +806,12 @@ $(function(){
     }
     plugins.event(null,arguments);
     };
+    /**
+       Handles WSChat quits (when another client disconnects).
+       @method wsQuit
+       @param {String} who The user who disconnected
+       @param {Event} e The raw event
+    */
     svp.ws.onquit = function wsQuit(who,e) {
     try {
         index = svp.watcherIndices[who];
@@ -720,6 +843,16 @@ $(function(){
     }
     }
 
+    /**
+       Called on initialization of the WSChat client.
+       @event init
+       @param {String} name The username that the local client will save and use
+    */
+    /**
+       Initializes the WSChat client.
+       @method initializeClient
+       @param {String} name The username that the local client will save and use
+    */
     function init(name) {
     localStorage.svpUsername = name
     $(&quot;#load-video-modal&quot;).modal(&#x27;show&#x27;);
@@ -733,7 +866,7 @@ $(function(){
     plugins.event(null,arguments);
     }
     svp.initializeClient = init;
-    $(&quot;#get-link-modal&quot;).modal({show:true}).modal(&quot;show&quot;).modal(&quot;hide&quot;);
+    //$(&quot;#get-link-modal&quot;).modal({show:true}).modal(&quot;show&quot;).modal(&quot;hide&quot;);
     $(&quot;#set-name-modal&quot;).modal({
     backdrop: &quot;static&quot;,
     keyboard: false,
@@ -762,8 +895,6 @@ $(function(){
     })
 
     plugins.init(svp);
-    for (i=0;i&lt;plugins.length;i++) {
-    new plugins[i](); }
 
 });
 

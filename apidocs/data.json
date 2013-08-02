@@ -1,9 +1,9 @@
 {
     "project": {
-        "name": "SVP API",
+        "name": "SocialVideoPlayer API",
         "description": "The API for the Social Video Player, for use in developing plugins.",
-        "version": "v0.9",
-        "logo": "",
+        "version": "v1.0",
+        "logo": "http://baryon5.github.io/socialvp/logo.png",
         "url": "https://github.com/baryon5/socialvp/"
     },
     "files": {
@@ -22,17 +22,28 @@
             "classes": {
                 "svp": 1
             },
-            "fors": {
-                "Plugin": 1,
-                "svp": 1
-            },
+            "fors": {},
             "namespaces": {}
         },
         "static/js/plugins.js": {
             "name": "static/js/plugins.js",
-            "modules": {},
+            "modules": {
+                "PluginAPI": 1
+            },
             "classes": {
+                "plugins": 1,
                 "Plugin": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "static/js/wschat.js": {
+            "name": "static/js/wschat.js",
+            "modules": {
+                "WSChat": 1
+            },
+            "classes": {
+                "WSChat": 1
             },
             "fors": {},
             "namespaces": {}
@@ -43,20 +54,45 @@
             "name": "SVP",
             "submodules": {},
             "classes": {
-                "svp": 1,
-                "Plugin": 1
-            },
-            "fors": {
-                "Plugin": 1,
                 "svp": 1
             },
+            "fors": {},
             "namespaces": {},
             "tag": "module",
-            "file": "static/js/plugins.js",
-            "line": 14,
+            "file": "static/js/my.js",
+            "line": 10,
             "description": "Social Video Player",
             "author": "Aaron Olkin",
             "itemtype": "main"
+        },
+        "PluginAPI": {
+            "name": "PluginAPI",
+            "submodules": {},
+            "classes": {
+                "plugins": 1,
+                "Plugin": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "static/js/plugins.js",
+            "line": 125,
+            "description": "A reusable and generic plugin API.",
+            "author": "Aaron Olkin"
+        },
+        "WSChat": {
+            "name": "WSChat",
+            "submodules": {},
+            "classes": {
+                "WSChat": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "static/js/wschat.js",
+            "line": 9,
+            "description": "WSChat Client",
+            "author": "Aaron Olkin"
         }
     },
     "classes": {
@@ -75,6 +111,21 @@
             "description": "The base object for the application.",
             "static": 1
         },
+        "plugins": {
+            "name": "plugins",
+            "shortname": "plugins",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PluginAPI",
+            "namespace": "",
+            "file": "static/js/plugins.js",
+            "line": 9,
+            "description": "The global object which core code can hook into.",
+            "static": 1
+        },
         "Plugin": {
             "name": "Plugin",
             "shortname": "Plugin",
@@ -83,11 +134,38 @@
             "extensions": [],
             "plugin_for": [],
             "extension_for": [],
-            "module": "SVP",
+            "module": "PluginAPI",
             "namespace": "",
             "file": "static/js/plugins.js",
-            "line": 14,
-            "description": "Allows creation of plugins.",
+            "line": 125,
+            "description": "Sets up a plugin constructor and adds it to the list, initializing it immediately\ndepending on the value of plugins.loaded.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "func",
+                    "description": "The plugin constructor",
+                    "type": "Function"
+                },
+                {
+                    "name": "proto",
+                    "description": "The plugin prototype",
+                    "type": "Object"
+                }
+            ]
+        },
+        "WSChat": {
+            "name": "WSChat",
+            "shortname": "WSChat",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "WSChat",
+            "namespace": "",
+            "file": "static/js/wschat.js",
+            "line": 9,
+            "description": "The WSChat constructor (bad style...possible refactoring candidate?)",
             "is_constructor": 1
         }
     },
@@ -121,7 +199,7 @@
         {
             "file": "static/js/my.js",
             "line": 99,
-            "description": "Called when the volume is adjusted using the slider\n(which should be the only way for the volume to change).\n*For Plugin use, see {{#crossLink \"Plugin/syncVolume:event\"}}here{{/crossLink}}.*",
+            "description": "Called when the volume is adjusted using the slider\n(which should be the only way for the volume to change).\n*For Plugin use, see {{#crossLink \"svp/syncVolume:event\"}}here{{/crossLink}}.*",
             "itemtype": "method",
             "name": "syncVolume",
             "params": [
@@ -152,30 +230,930 @@
                     "type": "Number"
                 }
             ],
-            "class": "Plugin",
+            "class": "svp",
             "module": "SVP"
         },
         {
             "file": "static/js/my.js",
-            "line": 141,
+            "line": 140,
             "description": "Called on video timeupdate, it takes care of updating all the various counters,\ntimelines, etc, as well as broadcasting the update.",
             "itemtype": "method",
             "name": "syncPos",
             "params": [
                 {
-                    "name": "The",
-                    "description": "event object",
+                    "name": "e",
+                    "description": "The event object",
                     "type": "Event"
                 }
             ],
             "class": "svp",
             "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 226,
+            "description": "Handles skip/ff controls.",
+            "itemtype": "method",
+            "name": "transportClick",
+            "params": [
+                {
+                    "name": "e",
+                    "description": "The Event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 256,
+            "description": "Broadcasts information about a jump.",
+            "itemtype": "method",
+            "name": "broadcastJump",
+            "params": [
+                {
+                    "name": "from",
+                    "description": "The username from which the jump originated",
+                    "type": "String"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 271,
+            "description": "Broadcasts information about a state (playing/paused) change.",
+            "itemtype": "method",
+            "name": "broadcastStateChange",
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 343,
+            "description": "Called to reset who is being synced to when the local user takes an action.",
+            "itemtype": "method",
+            "name": "resetSync",
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 361,
+            "description": "Adds all of the DOM elements and configuration for a new \"watcher\".",
+            "itemtype": "method",
+            "name": "addWatcher",
+            "params": [
+                {
+                    "name": "watcher",
+                    "description": "The \"watcher\" object to add",
+                    "type": "Object"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 407,
+            "description": "Loads a new video into the DOM and resets objects.",
+            "itemtype": "method",
+            "name": "loadVideo",
+            "params": [
+                {
+                    "name": "url",
+                    "description": "The video URL",
+                    "type": "String"
+                },
+                {
+                    "name": "id",
+                    "description": "A semi-random ID for identifying this viewing session",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "true (upon successful completion)",
+                "type": "Mixed"
+            },
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 415,
+            "description": "Allows editing of the video url before loading it into the video element.",
+            "itemtype": "event",
+            "name": "videoUrl",
+            "params": [
+                {
+                    "name": "url",
+                    "description": "The original URL",
+                    "type": "String"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 461,
+            "description": "Turns the lights on!",
+            "itemtype": "method",
+            "name": "lightsOn",
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 473,
+            "description": "Turns the lights out!",
+            "itemtype": "method",
+            "name": "lightsOff",
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 487,
+            "description": "Called when a play/pause event is needed, for whatever reason.",
+            "itemtype": "method",
+            "name": "stateChange",
+            "params": [
+                {
+                    "name": "from",
+                    "description": "The username of the person who initiated the state change",
+                    "type": "String",
+                    "optional": true
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 515,
+            "description": "Called when the player or a playpause button is clicked.",
+            "itemtype": "method",
+            "name": "playPause",
+            "params": [
+                {
+                    "name": "e",
+                    "description": "The click event",
+                    "type": "Event"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 532,
+            "description": "Called to process and display a chat message.",
+            "itemtype": "method",
+            "name": "recieveChat",
+            "params": [
+                {
+                    "name": "from",
+                    "description": "The username of the person who sent the message (\"You\" if the local user)",
+                    "type": "String"
+                },
+                {
+                    "name": "message",
+                    "description": "The message he or she sent",
+                    "type": "String"
+                },
+                {
+                    "name": "time",
+                    "description": "The timestamp for the message (if left out the current time is used)",
+                    "optional": true
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 568,
+            "description": "The WSChat instance responsible for transmitting data between clients.",
+            "itemtype": "property",
+            "name": "ws",
+            "type": "WSChat",
+            "default": "WSChat();",
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 575,
+            "description": "Handles WSChat errors.",
+            "itemtype": "method",
+            "name": "wsError",
+            "params": [
+                {
+                    "name": "code",
+                    "description": "The WSChat error code",
+                    "type": "Number"
+                },
+                {
+                    "name": "message",
+                    "description": "A friendly error message",
+                    "type": "String"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 589,
+            "description": "Handles WSChat \"messages\".",
+            "itemtype": "method",
+            "name": "wsMessage",
+            "params": [
+                {
+                    "name": "data",
+                    "description": "The message data",
+                    "type": "Object"
+                },
+                {
+                    "name": "from",
+                    "description": "The user who sent the message",
+                    "type": "String"
+                },
+                {
+                    "name": "e",
+                    "description": "The raw event",
+                    "type": "Event"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 596,
+            "description": "Recieves private WebSocket plugin messages.",
+            "itemtype": "event",
+            "name": "plugin",
+            "type": "Type",
+            "params": [
+                {
+                    "name": "data",
+                    "description": "Depends on the plugin that sent the message",
+                    "type": "Mixed"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 640,
+            "description": "Handles WSChat \"broadcasts\".",
+            "itemtype": "method",
+            "name": "wsBroadcast",
+            "params": [
+                {
+                    "name": "data",
+                    "description": "The message data",
+                    "type": "Object"
+                },
+                {
+                    "name": "from",
+                    "description": "The user who sent the message",
+                    "type": "String"
+                },
+                {
+                    "name": "e",
+                    "description": "The raw event",
+                    "type": "Event"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 647,
+            "description": "Recieves special WSChat plugin broadcasts that are independent of the current video ID.",
+            "itemtype": "event",
+            "name": "pluginGlobal",
+            "type": "Type",
+            "params": [
+                {
+                    "name": "data",
+                    "description": "Depends on the plugin that sent the message",
+                    "type": "Mixed"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 652,
+            "description": "Recieves WSChat plugin broadcast messages.",
+            "itemtype": "event",
+            "name": "pluginBroadcast",
+            "type": "Type",
+            "params": [
+                {
+                    "name": "data",
+                    "description": "Depends on the plugin that sent the message",
+                    "type": "Mixed"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 704,
+            "description": "Handles WSChat quits (when another client disconnects).",
+            "itemtype": "method",
+            "name": "wsQuit",
+            "params": [
+                {
+                    "name": "who",
+                    "description": "The user who disconnected",
+                    "type": "String"
+                },
+                {
+                    "name": "e",
+                    "description": "The raw event",
+                    "type": "Event"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 741,
+            "description": "Called on initialization of the WSChat client.",
+            "itemtype": "event",
+            "name": "init",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "The username that the local client will save and use",
+                    "type": "String"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 746,
+            "description": "Initializes the WSChat client.",
+            "itemtype": "method",
+            "name": "initializeClient",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "The username that the local client will save and use",
+                    "type": "String"
+                }
+            ],
+            "class": "svp",
+            "module": "SVP"
+        },
+        {
+            "file": "static/js/plugins.js",
+            "line": 15,
+            "description": "Set by the core code when all preset plugins have been initialized\nand it is ready. It allows plugins loaded in the future to be\ninstantiated immediately.",
+            "class": "plugins",
+            "module": "PluginAPI"
+        },
+        {
+            "file": "static/js/plugins.js",
+            "line": 22,
+            "description": "Holds arrays of event callbacks.",
+            "itemtype": "property",
+            "name": "handlers",
+            "access": "private",
+            "tagname": "",
+            "class": "plugins",
+            "module": "PluginAPI"
+        },
+        {
+            "file": "static/js/plugins.js",
+            "line": 28,
+            "description": "Holds arrays of editor callbacks.",
+            "itemtype": "property",
+            "name": "handlers",
+            "access": "private",
+            "tagname": "",
+            "class": "plugins",
+            "module": "PluginAPI"
+        },
+        {
+            "file": "static/js/plugins.js",
+            "line": 34,
+            "description": "Holds arrays of string filters.",
+            "itemtype": "property",
+            "name": "filters",
+            "access": "private",
+            "tagname": "",
+            "class": "plugins",
+            "module": "PluginAPI"
+        },
+        {
+            "file": "static/js/plugins.js",
+            "line": 41,
+            "description": "Loads all preset plugins and tells future plugins to load immediately.",
+            "itemtype": "method",
+            "name": "init",
+            "params": [
+                {
+                    "name": "it",
+                    "description": "This argument is ignored at the moment",
+                    "type": "Mixed"
+                }
+            ],
+            "beta": 1,
+            "class": "plugins",
+            "module": "PluginAPI"
+        },
+        {
+            "file": "static/js/plugins.js",
+            "line": 53,
+            "description": "Core code should call this to post an event for plugins to catch.",
+            "itemtype": "method",
+            "name": "event",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "Either a function (whose name will then be used) or a string",
+                    "type": "Mixed"
+                },
+                {
+                    "name": "args",
+                    "description": "An array of arguments available to callbacks",
+                    "type": "Array"
+                }
+            ],
+            "example": [
+                " \n    plugins.event(null,arguments); // will use the name of the callee from the arguments variable"
+            ],
+            "class": "plugins",
+            "module": "PluginAPI"
+        },
+        {
+            "file": "static/js/plugins.js",
+            "line": 68,
+            "description": "Core code should call this to allow plugins to filter certain strings.",
+            "itemtype": "method",
+            "name": "filter",
+            "params": [
+                {
+                    "name": "message",
+                    "description": "The string to filter",
+                    "type": "String"
+                },
+                {
+                    "name": "*arguments",
+                    "description": "Any additional arguments will still be\n    passed through, as an array",
+                    "type": "Mixed",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "The (possibly) filtered message",
+                "type": "String"
+            },
+            "class": "plugins",
+            "module": "PluginAPI"
+        },
+        {
+            "file": "static/js/plugins.js",
+            "line": 82,
+            "description": "Core code should call this to allow plugins to make changes to arbitrary objects\nor change default behaviors.",
+            "itemtype": "method",
+            "name": "editor",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "Either a function (whose name will then be used) or a string",
+                    "type": "Mixed"
+                },
+                {
+                    "name": "object",
+                    "description": "The object to edit",
+                    "type": "Mixed"
+                }
+            ],
+            "return": {
+                "description": "The (possibly) edited object",
+                "type": "Mixed"
+            },
+            "class": "plugins",
+            "module": "PluginAPI"
+        },
+        {
+            "file": "static/js/plugins.js",
+            "line": 101,
+            "description": "Mostly a wrapper around a jQuery.getScript call, it provides some URL help.",
+            "itemtype": "method",
+            "name": "load",
+            "params": [
+                {
+                    "name": "url",
+                    "description": "The URL/name of the plugin to load. If it does not\n    end with .plg.js, or at least .js, those suffixes will be added.",
+                    "type": "String"
+                },
+                {
+                    "name": "ready",
+                    "description": "A success callback",
+                    "type": "Function"
+                },
+                {
+                    "name": "error",
+                    "description": "An error callback",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "The jQueryXHR object for the AJAX request",
+                "type": "JqXHR"
+            },
+            "class": "plugins",
+            "module": "PluginAPI"
+        },
+        {
+            "file": "static/js/plugins.js",
+            "line": 143,
+            "description": "Registers a event handler with the plugin API.",
+            "itemtype": "method",
+            "name": "register",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "The event type to register with",
+                    "type": "String"
+                },
+                {
+                    "name": "callback",
+                    "description": "The method to register. It will be called in the context of the plugin.",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "The registration ID, can be used to unregister the handler later.",
+                "type": "Number"
+            },
+            "class": "Plugin",
+            "module": "PluginAPI"
+        },
+        {
+            "file": "static/js/plugins.js",
+            "line": 153,
+            "description": "Registers a event handler with the plugin API.",
+            "itemtype": "method",
+            "name": "useEditor",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "The edit type to register",
+                    "type": "String"
+                },
+                {
+                    "name": "callback",
+                    "description": "The method to register. It will be called in the context of the plugin.",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "The registration ID, can be used to unregister the editor later.",
+                "type": "Number"
+            },
+            "class": "Plugin",
+            "module": "PluginAPI"
+        },
+        {
+            "file": "static/js/plugins.js",
+            "line": 163,
+            "description": "Registers a string filter with the plugin API.",
+            "itemtype": "method",
+            "name": "useFilter",
+            "params": [
+                {
+                    "name": "regex",
+                    "description": "This filter will only be applied if the regex matches",
+                    "type": "RegExp"
+                },
+                {
+                    "name": "callback",
+                    "description": "The method to register. It will be called in the context of the plugin.",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "The registration ID, can be used to unregister the filter later. (Note: unregistering is not implemented yet.)",
+                "type": "Number"
+            },
+            "class": "Plugin",
+            "module": "PluginAPI"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 16,
+            "description": "The number of times this client has tried to connect to the server\nsince the last success.",
+            "itemtype": "attribute",
+            "name": "retries",
+            "readonly": "",
+            "type": "Number",
+            "default": "0",
+            "class": "WSChat",
+            "module": "WSChat"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 25,
+            "description": "Whether this client is currently connected.",
+            "itemtype": "attribute",
+            "name": "closed",
+            "readonly": "",
+            "type": "Boolean",
+            "default": "true",
+            "class": "WSChat",
+            "module": "WSChat"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 33,
+            "description": "Whether this client should log debug info to the browser console.",
+            "itemtype": "property",
+            "name": "log",
+            "type": "Boolean",
+            "default": "false",
+            "class": "WSChat",
+            "module": "WSChat"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 41,
+            "description": "Initializes a WSChat client and connects to the specified server.",
+            "itemtype": "method",
+            "name": "init",
+            "params": [
+                {
+                    "name": "url",
+                    "description": "The websocket url to connect to",
+                    "type": "String"
+                },
+                {
+                    "name": "name",
+                    "description": "The username to use",
+                    "type": "String"
+                },
+                {
+                    "name": "noretry",
+                    "description": "Whether to attempt to recconnect if the connection is lost",
+                    "type": "Boolean",
+                    "optional": true
+                }
+            ],
+            "class": "WSChat",
+            "module": "WSChat"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 55,
+            "description": "The underlying WebSocket instance that handles the raw communication.",
+            "itemtype": "property",
+            "name": "socket",
+            "access": "private",
+            "tagname": "",
+            "type": "WebSocket",
+            "default": "new WebSocket(url);",
+            "class": "WSChat",
+            "module": "WSChat"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 110,
+            "description": "Sends a message to the specified client.",
+            "itemtype": "method",
+            "name": "message",
+            "params": [
+                {
+                    "name": "message",
+                    "description": "The message to send",
+                    "type": "String"
+                },
+                {
+                    "name": "to",
+                    "description": "The user to send the message to",
+                    "type": "String"
+                }
+            ],
+            "class": "WSChat",
+            "module": "WSChat"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 119,
+            "description": "Broadcasts a message to all connected clients.",
+            "itemtype": "method",
+            "name": "broadcast",
+            "params": [
+                {
+                    "name": "message",
+                    "description": "The message to send",
+                    "type": "String"
+                }
+            ],
+            "class": "WSChat",
+            "module": "WSChat"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 127,
+            "description": "Performs the actual sending operation.",
+            "itemtype": "method",
+            "name": "send",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "data",
+                    "description": "The object to be serialized and sent",
+                    "type": "Object"
+                }
+            ],
+            "class": "WSChat",
+            "module": "WSChat"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 139,
+            "description": "Closes the underlying websocket. However, unless the WSChat instance\nis in noretry mode it will immediately attempt to reopen the connection.",
+            "itemtype": "method",
+            "name": "close",
+            "class": "WSChat",
+            "module": "WSChat"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 147,
+            "description": "Called on receipt of a message.",
+            "itemtype": "event",
+            "name": "onmessage",
+            "params": [
+                {
+                    "name": "message",
+                    "description": "The message received",
+                    "type": "String"
+                },
+                {
+                    "name": "from",
+                    "description": "The username of the person who sent the message",
+                    "type": "String"
+                },
+                {
+                    "name": "e",
+                    "description": "The raw event",
+                    "type": "Event"
+                }
+            ],
+            "class": "WSChat",
+            "module": "WSChat"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 155,
+            "description": "Called on receipt of a broadcast.",
+            "itemtype": "event",
+            "name": "onbroadcast",
+            "params": [
+                {
+                    "name": "message",
+                    "description": "The message received",
+                    "type": "String"
+                },
+                {
+                    "name": "from",
+                    "description": "The username of the person who sent the broadcast",
+                    "type": "String"
+                },
+                {
+                    "name": "e",
+                    "description": "The raw event",
+                    "type": "Event"
+                }
+            ],
+            "class": "WSChat",
+            "module": "WSChat"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 163,
+            "description": "Called on receipt of a WSChat error.",
+            "itemtype": "event",
+            "name": "onerror",
+            "params": [
+                {
+                    "name": "code",
+                    "description": "The numeric identifier for the WSChat error",
+                    "type": "Number"
+                },
+                {
+                    "name": "message",
+                    "description": "A nice error message string",
+                    "type": "String"
+                },
+                {
+                    "name": "lastmessage",
+                    "description": "The last message",
+                    "type": "String",
+                    "optional": true
+                }
+            ],
+            "class": "WSChat",
+            "module": "WSChat"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 171,
+            "description": "Called when a websocket error occurs.",
+            "itemtype": "event",
+            "name": "onwserror",
+            "params": [
+                {
+                    "name": "e",
+                    "description": "The raw event",
+                    "type": "Event"
+                }
+            ],
+            "class": "WSChat",
+            "module": "WSChat"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 177,
+            "description": "Called when a client disconnects from the server.",
+            "itemtype": "event",
+            "name": "onquit",
+            "params": [
+                {
+                    "name": "who",
+                    "description": "The username of the client who quit",
+                    "type": "String"
+                },
+                {
+                    "name": "e",
+                    "description": "The raw event",
+                    "type": "Event"
+                }
+            ],
+            "class": "WSChat",
+            "module": "WSChat"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 184,
+            "description": "Called when the websocket closes for any reason.",
+            "itemtype": "event",
+            "name": "onclose",
+            "params": [
+                {
+                    "name": "e",
+                    "description": "The raw event",
+                    "type": "Event"
+                }
+            ],
+            "class": "WSChat",
+            "module": "WSChat"
+        },
+        {
+            "file": "static/js/wschat.js",
+            "line": 190,
+            "description": "Called on a successful connection and identification to the server.",
+            "itemtype": "event",
+            "name": "onconnected",
+            "params": [
+                {
+                    "name": "message",
+                    "description": "The server welcome message (?)",
+                    "type": "String"
+                }
+            ],
+            "class": "WSChat",
+            "module": "WSChat"
         }
     ],
     "warnings": [
         {
             "message": "Missing item type\nBootstrap.js by @fat & @mdo\nplugins: bootstrap-transition.js, bootstrap-modal.js, bootstrap-dropdown.js, bootstrap-scrollspy.js, bootstrap-tab.js, bootstrap-tooltip.js, bootstrap-popover.js, bootstrap-affix.js, bootstrap-alert.js, bootstrap-button.js, bootstrap-collapse.js, bootstrap-carousel.js, bootstrap-typeahead.js\nCopyright 2012 Twitter, Inc.\nhttp://www.apache.org/licenses/LICENSE-2.0.txt",
             "line": " static/js/bootstrap.min.js:1"
+        },
+        {
+            "message": "Missing item type\nSet by the core code when all preset plugins have been initialized\nand it is ready. It allows plugins loaded in the future to be\ninstantiated immediately.",
+            "line": " static/js/plugins.js:15"
         }
     ]
 }
