@@ -1,7 +1,7 @@
 {
-    "name": "SVP API",
+    "name": "SocialVideoPlayer API",
     "description": "The API for the Social Video Player, for use in developing plugins.",
-    "version": "v0.9",
+    "version": "v1.0",
     "logo": "http://baryon5.github.io/socialvp/logo.png",
     "url": "https://github.com/baryon5/socialvp/",
     "options": {

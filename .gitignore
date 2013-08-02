@@ -7,7 +7,6 @@ static/url-json/*.json
 /static/jquery-ui-bootstrap
 
 /docs.sh
-/logo.xcf
 
 # Emacs ignores
 *~
