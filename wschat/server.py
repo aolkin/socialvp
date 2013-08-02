@@ -1,7 +1,17 @@
 #!/usr/bin/env python3
 
 from tornado import websocket, web, ioloop
-import json, sys, os, time
+import json, sys, os, time, importlib
+
+plugins = []
+for i in os.listdir("wschat/plugins"):
+    if i.endswith(".py") and i != "__init__.py":
+        plugins.append(importlib.import_module("plugins."+i[:-3]))
+        try:
+            plugins[-1].handler
+        except AttributeError as err:
+            print("Invalid plugin: {} ({})".format(i,plugins.pop()))
+print("Loaded plugins:",plugins)
 
 CODES = {
     10:"Please identify yourself!",
@@ -86,7 +96,8 @@ app = web.Application([
         (r'/()', web.StaticFileHandler, {"path":staticpath+"/index.html"}),
         (r'/wschat',WSHandler),
         (r'/wslist',WSList),
-        (r'/(.+)', web.StaticFileHandler, {"path":staticpath})])
+        (r'/(.+)', web.StaticFileHandler, {"path":staticpath})]+
+                      [ i.handler for i in plugins ])
 
 
 def main():
@@ -104,7 +115,7 @@ def main():
             os.kill(int(pid),15)
         exit(0)
     if pid and os.path.exists("/proc/{}".format(pid)):
-            print("This server is already running! Restarting...")
+            print("This server is already running! Stopping...")
             os.kill(int(pid),15)
 
 
