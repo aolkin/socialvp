@@ -92,12 +92,12 @@ while not os.path.isdir(staticpath):
     if len(staticpath.split("/") > 6):
         raise IOError("Static files directory not found! (reached search limit)")
 
-app = web.Application([
-        (r'/()', web.StaticFileHandler, {"path":staticpath+"/index.html"}),
-        (r'/wschat',WSHandler),
-        (r'/wslist',WSList),
-        (r'/(.+)', web.StaticFileHandler, {"path":staticpath})]+
-                      [ i.handler for i in plugins ])
+handlers = ([(r'/()', web.StaticFileHandler, {"path":staticpath+"/index.html"}),
+             (r'/wschat',WSHandler),
+             (r'/wslist',WSList)]+
+            [ i.handler for i in plugins ]+
+            [(r'/(.+)', web.StaticFileHandler, {"path":staticpath})])
+app = web.Application(handlers)
 
 
 def main():

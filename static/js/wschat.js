@@ -4,6 +4,7 @@
    @author Aaron Olkin
 
    @module WSChat
+   @namespace client.core
 */
 
 /**

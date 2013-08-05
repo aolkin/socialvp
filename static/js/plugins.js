@@ -4,6 +4,7 @@
    @author Aaron Olkin
 
    @module PluginAPI
+   @namespace client.api
 */
 
 /**
@@ -27,7 +28,7 @@ plugins.loaded = false;
 plugins.handlers = {};
 /**
    Holds arrays of editor callbacks.
-   @property handlers
+   @property editors
    @private
 */
 plugins.editors = {};
@@ -39,7 +40,7 @@ plugins.editors = {};
 plugins.filters = {};
 
 /**
-   Loads all preset plugins and tells future plugins to load immediately.
+   Loads all preloaded plugins and tells future plugins to load immediately.
    @method init
    @param {Mixed} it This argument is ignored at the moment
    @beta
@@ -96,6 +97,16 @@ plugins.editor = function(type,object) {
 	}
     }
     return object;
+}
+
+/**
+   Creates a new element for a plugin to use.
+   *This method is designed to be overwritten by the core code.*
+   @method requestDiv
+   @return {jQuery Array} a jQuery array containing a single div
+*/
+plugins.requestDiv = function() {
+    return $("<div>").appendTo("body");
 }
 
 /**

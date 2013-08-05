@@ -1,3 +1,9 @@
+.navbar img {
+    height: 32px;
+    margin: 4px;
+    float: left;
+}
+
 .blackbg, .blackbg .ui-widget-content .ui-state-default, .blackbg .ui-slider .ui-slider-range {
     background-color: #000000;
     background-image: none;

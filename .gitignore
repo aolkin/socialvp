@@ -3,9 +3,6 @@
 
 static/url-json/*.json
 
-/apidocs
-/static/jquery-ui-bootstrap
-
 /docs.sh
 
 # Emacs ignores

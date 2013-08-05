@@ -2,9 +2,9 @@
    Social Video Player
    
    @author Aaron Olkin
-   
+
    @module SVP
-   @main
+   @namespace client.core
 */
 
 /**
@@ -424,7 +424,6 @@ $(function(){
 	if (video.id == "0") {
 	    return false; }
 	try {
-	    $(".container-fluid.hide").removeClass("hide").show();
 	    $("#volume").show()
 		.position({"my":"center bottom","at":"center","of":$("#volume").prev()}).hide();
 	} catch (err) {}
@@ -433,7 +432,7 @@ $(function(){
 	svp.watcherIndices = {};
 	$("#link").val(location.origin+"/#join:"+svp.video.id);
 	$(".watcher").remove()
-	$("#player").attr("src",plugins.editor("videoUrl",svp.video.url));
+	$("#player").attr("src",plugins.editor("videoUrl",svp.video.url)).attr("poster","");
 	svp.player.load();
 	$("#current-url a").attr("href",svp.video.url).text(svp.video.url).click(
 	    function(e){ e.preventDefault(); });
@@ -761,7 +760,6 @@ $(function(){
 	plugins.event(null,arguments);
     }
     svp.initializeClient = init;
-    //$("#get-link-modal").modal({show:true}).modal("show").modal("hide");
     $("#set-name-modal").modal({
 	backdrop: "static",
 	keyboard: false,
