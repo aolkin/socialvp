@@ -4,6 +4,7 @@
    @author Aaron Olkin
 
    @module PluginAPI
+   @namespace client.api
 */
 
 /**
@@ -12,6 +13,16 @@
    @static
 */
 plugins = [];
+
+/**
+   An object that holds assembled plugin constructors to prevent reloading.
+   @property plugins
+   @protected
+   @type {Object}
+   @default {}
+*/
+plugins.plugins = {};
+
 /**
    Set by the core code when all preset plugins have been initialized
    and it is ready. It allows plugins loaded in the future to be
@@ -27,7 +38,7 @@ plugins.loaded = false;
 plugins.handlers = {};
 /**
    Holds arrays of editor callbacks.
-   @property handlers
+   @property editors
    @private
 */
 plugins.editors = {};
@@ -39,14 +50,14 @@ plugins.editors = {};
 plugins.filters = {};
 
 /**
-   Loads all preset plugins and tells future plugins to load immediately.
+   Loads all preloaded plugins and tells future plugins to load immediately.
    @method init
    @param {Mixed} it This argument is ignored at the moment
    @beta
 */
 plugins.init = function (it) {
-    for (i=0;i<plugins.length;i++) {
-	new plugins[i](); }
+    for (i in plugins.plugins) {
+	plugins.push(new i()); }
     plugins.loaded = true;
 };
 
@@ -63,6 +74,11 @@ plugins.event = function(type,args) {
     if (!type) { type = args.callee; }
     if (typeof type == "function") {
 	type = type.name; }
+    if (plugins.handlers[type]) {
+	console.log(plugins.handlers[type]);
+	for (i=0;i<plugins.handlers[type].length;i++) {
+	    plugins.handlers[type][i](type,args); }
+    }
     console.log(type,args);
 };
 /**
@@ -77,7 +93,7 @@ plugins.filter = function(message) {
     for (i in plugins.filters) {
 	// Do regex stuff here...
     }
-    return message
+    return message;
 }
 /**
    Core code should call this to allow plugins to make changes to arbitrary objects
@@ -108,8 +124,8 @@ plugins.editor = function(type,object) {
    @return {jqXHR} The jQueryXHR object for the AJAX request
 */
 plugins.load = function(url,ready,error) {
-    if (name.indexOf(".js",name.length-3) === -1) {
-	if (name.indexOf(".plg",name.length-4) === -1) {
+    if (url.indexOf(".js",url.length-3) === -1) {
+	if (url.indexOf(".plg",url.length-4) === -1) {
 	    url = url+".plg"; }
 	url = url + ".js";
     }
@@ -125,19 +141,25 @@ plugins.load = function(url,ready,error) {
 /**
    Sets up a plugin constructor and adds it to the list, initializing it immediately
    depending on the value of plugins.loaded.
+
+   This page documents the default Plugin object. Core code will usually extend it,
+   so you should look at {{#crossLink "client.core.Plugin"}}{{/crossLink}} to see
+   all of the functionality available to a plugin.
    @class Plugin
    @constructor
    @param {Function} func The plugin constructor
    @param {Object} proto The plugin prototype
 */
 Plugin = function (func,proto) {
+    id = func.name;
+    if (plugins.plugins[id]) { return false; }
     for (i in proto) {
 	this[i] = proto[i];
     }
     func.prototype = this;
-    plugins.push(func);
+    plugins.plugins[id] = func;
     if (plugins.loaded) {
-	new func(); }
+	plugins.push(new func()); }
 };
 Plugin.prototype = {
     /**
@@ -171,7 +193,16 @@ Plugin.prototype = {
 	this._register("filter",regex,callback);
     },
     _register: function(type,f,c) {
-	plugins[type+"s"][f] || plugins[type+"s"][f] = [];
+	plugins[type+"s"][f] || (plugins[type+"s"][f] = []);
 	return plugins[type+"s"][f].push($.proxy(c,this));
+    },
+    /**
+       Creates a new element for a plugin to use.
+       *This method is designed to be overwritten by the core code.*
+       @method requestDiv
+       @return {jQuery Array} a jQuery array containing a single div
+    */
+    requestDiv: function() {
+	return $("<div>").appendTo("body");
     }
 };

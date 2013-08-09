@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Plugin - SocialVideoPlayer API</title>
+    <title>client.core.Plugin - SocialVideoPlayer API</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -46,13 +46,17 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
-                <li><a href="../classes/Plugin.html">Plugin</a></li>
+                <li><a href="../classes/client.api.Plugin.html">client.api.Plugin</a></li>
             
-                <li><a href="../classes/plugins.html">plugins</a></li>
+                <li><a href="../classes/client.api.plugins.html">client.api.plugins</a></li>
             
-                <li><a href="../classes/svp.html">svp</a></li>
+                <li><a href="../classes/client.core.Plugin.html">client.core.Plugin</a></li>
             
-                <li><a href="../classes/WSChat.html">WSChat</a></li>
+                <li><a href="../classes/client.core.svp.html">client.core.svp</a></li>
+            
+                <li><a href="../classes/client.core.WSChat.html">client.core.WSChat</a></li>
+            
+                <li><a href="../classes/protocols.WebTorrent.html">protocols.WebTorrent</a></li>
             
             </ul>
 
@@ -61,6 +65,8 @@
                 <li><a href="../modules/PluginAPI.html">PluginAPI</a></li>
             
                 <li><a href="../modules/SVP.html">SVP</a></li>
+            
+                <li><a href="../modules/webtorrent.py.html">webtorrent.py</a></li>
             
                 <li><a href="../modules/WSChat.html">WSChat</a></li>
             
@@ -99,21 +105,25 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>Plugin Class</h1>
+                        <h1>client.core.Plugin Class</h1>
 <div class="box meta">
     
 
     
+        <div class="extends">
+            Extends <a href="../classes/client.api.Plugin.html" class="crosslink">client.api.Plugin</a>
+        </div>
+    
 
     
         <div class="foundat">
-            Defined in: <a href="../files/static_js_plugins.js.html#l125"><code>static&#x2F;js&#x2F;plugins.js:125</code></a>
+            Defined in: <a href="../files/static_js_my.js.html#l826"><code>static&#x2F;js&#x2F;my.js:826</code></a>
         </div>
     
 
     
         
-            Module: <a href="../modules/PluginAPI.html">PluginAPI</a>
+            Module: <a href="../modules/SVP.html">SVP</a>
         
     
 
@@ -123,124 +133,12 @@
 
 
 <div class="box intro">
-    <p>Sets up a plugin constructor and adds it to the list, initializing it immediately
-depending on the value of plugins.loaded.</p>
+    <p>Plugin functionality, as amended by the SVP core. To view the plugin 
+constructor documentation, please see
+<a href="../classes/client.api.Plugin.html" class="crosslink">here</a>.</p>
 
 </div>
 
-
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_Plugin" class="method item">
-    <h3 class="name"><code>Plugin</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>func</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>proto</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/static_js_plugins.js.html#l125"><code>static&#x2F;js&#x2F;plugins.js:125</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">func</code>
-                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The plugin constructor</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">proto</code>
-                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The plugin prototype</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-    </div>
 
 
 <div id="classdocs" class="tabview">
@@ -263,23 +161,30 @@ depending on the value of plugins.loaded.</p>
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods">
+                    <ul class="index-list methods extends">
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_register">register</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
+                                <a href="#method_requestDiv">requestDiv</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
                                 <a href="#method_useEditor">useEditor</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_useFilter">useFilter</a>
 
                                 
@@ -302,7 +207,7 @@ depending on the value of plugins.loaded.</p>
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_register" class="method item">
+                    <div id="method_register" class="method item inherited">
     <h3 class="name"><code>register</code></h3>
 
     
@@ -346,15 +251,12 @@ depending on the value of plugins.loaded.</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/client.api.Plugin.html#method_register">client.api.Plugin</a>:
             
         
         
-        <a href="../files/static_js_plugins.js.html#l143"><code>static&#x2F;js&#x2F;plugins.js:143</code></a>
+        <a href="../files/static_js_plugins.js.html#l165"><code>static&#x2F;js&#x2F;plugins.js:165</code></a>
         
         </p>
 
@@ -431,7 +333,115 @@ depending on the value of plugins.loaded.</p>
 </div>
 
                 
-                    <div id="method_useEditor" class="method item">
+                    <div id="method_requestDiv" class="method item">
+    <h3 class="name"><code>requestDiv</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>size=0</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">JQuery Array</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            <p>Inherited from
+            <a href="../classes/client.api.Plugin.html#method_requestDiv">
+                client.api.Plugin
+            </a>
+            
+            but overwritten in
+            
+        
+        
+        <a href="../files/static_js_my.js.html#l834"><code>static&#x2F;js&#x2F;my.js:834</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Creates a new element for a plugin to use.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">size=0</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Pass a zero for a smaller-width container or a one
+for a larger container. Other sizes do not exist at this time.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">JQuery Array</span>:
+                    
+                    <p>a jQuery array containing a single div</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_useEditor" class="method item inherited">
     <h3 class="name"><code>useEditor</code></h3>
 
     
@@ -475,15 +485,12 @@ depending on the value of plugins.loaded.</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/client.api.Plugin.html#method_useEditor">client.api.Plugin</a>:
             
         
         
-        <a href="../files/static_js_plugins.js.html#l153"><code>static&#x2F;js&#x2F;plugins.js:153</code></a>
+        <a href="../files/static_js_plugins.js.html#l175"><code>static&#x2F;js&#x2F;plugins.js:175</code></a>
         
         </p>
 
@@ -560,7 +567,7 @@ depending on the value of plugins.loaded.</p>
 </div>
 
                 
-                    <div id="method_useFilter" class="method item">
+                    <div id="method_useFilter" class="method item inherited">
     <h3 class="name"><code>useFilter</code></h3>
 
     
@@ -604,15 +611,12 @@ depending on the value of plugins.loaded.</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/client.api.Plugin.html#method_useFilter">client.api.Plugin</a>:
             
         
         
-        <a href="../files/static_js_plugins.js.html#l163"><code>static&#x2F;js&#x2F;plugins.js:163</code></a>
+        <a href="../files/static_js_plugins.js.html#l185"><code>static&#x2F;js&#x2F;plugins.js:185</code></a>
         
         </p>
 

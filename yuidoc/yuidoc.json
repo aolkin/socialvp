@@ -5,7 +5,7 @@
     "logo": "http://baryon5.github.io/socialvp/logo.png",
     "url": "https://github.com/baryon5/socialvp/",
     "options": {
-	"paths": "static/js/",
+	"paths": ["static/js/","wschat/","wschat/plugins/"],
 	"outdir": "apidocs",
 	"linkNatives": true,
 	"tabtospace": 4

@@ -20,10 +20,13 @@
                 "SVP": 1
             },
             "classes": {
-                "svp": 1
+                "client.core.svp": 1,
+                "client.core.Plugin": 1
             },
             "fors": {},
-            "namespaces": {}
+            "namespaces": {
+                "client.core": 1
+            }
         },
         "static/js/plugins.js": {
             "name": "static/js/plugins.js",
@@ -31,11 +34,13 @@
                 "PluginAPI": 1
             },
             "classes": {
-                "plugins": 1,
-                "Plugin": 1
+                "client.api.plugins": 1,
+                "client.api.Plugin": 1
             },
             "fors": {},
-            "namespaces": {}
+            "namespaces": {
+                "client.api": 1
+            }
         },
         "static/js/wschat.js": {
             "name": "static/js/wschat.js",
@@ -43,10 +48,25 @@
                 "WSChat": 1
             },
             "classes": {
-                "WSChat": 1
+                "client.core.WSChat": 1
             },
             "fors": {},
-            "namespaces": {}
+            "namespaces": {
+                "client.core": 1
+            }
+        },
+        "wschat/plugins/webtorrent.py": {
+            "name": "wschat/plugins/webtorrent.py",
+            "modules": {
+                "webtorrent.py": 1
+            },
+            "classes": {
+                "protocols.WebTorrent": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "protocols": 1
+            }
         }
     },
     "modules": {
@@ -54,29 +74,33 @@
             "name": "SVP",
             "submodules": {},
             "classes": {
-                "svp": 1
+                "client.core.svp": 1,
+                "client.core.Plugin": 1
             },
             "fors": {},
-            "namespaces": {},
+            "namespaces": {
+                "client.core": 1
+            },
             "tag": "module",
             "file": "static/js/my.js",
-            "line": 10,
+            "line": 826,
             "description": "Social Video Player",
-            "author": "Aaron Olkin",
-            "itemtype": "main"
+            "author": "Aaron Olkin"
         },
         "PluginAPI": {
             "name": "PluginAPI",
             "submodules": {},
             "classes": {
-                "plugins": 1,
-                "Plugin": 1
+                "client.api.plugins": 1,
+                "client.api.Plugin": 1
             },
             "fors": {},
-            "namespaces": {},
+            "namespaces": {
+                "client.api": 1
+            },
             "tag": "module",
             "file": "static/js/plugins.js",
-            "line": 125,
+            "line": 141,
             "description": "A reusable and generic plugin API.",
             "author": "Aaron Olkin"
         },
@@ -84,20 +108,37 @@
             "name": "WSChat",
             "submodules": {},
             "classes": {
-                "WSChat": 1
+                "client.core.WSChat": 1
             },
             "fors": {},
-            "namespaces": {},
+            "namespaces": {
+                "client.core": 1
+            },
             "tag": "module",
             "file": "static/js/wschat.js",
-            "line": 9,
+            "line": 10,
             "description": "WSChat Client",
             "author": "Aaron Olkin"
+        },
+        "webtorrent.py": {
+            "name": "webtorrent.py",
+            "submodules": {},
+            "classes": {
+                "protocols.WebTorrent": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "protocols": 1
+            },
+            "tag": "module",
+            "file": "wschat/plugins/webtorrent.py",
+            "line": 16,
+            "description": "WebTorrent server plugin module"
         }
     },
     "classes": {
-        "svp": {
-            "name": "svp",
+        "client.core.svp": {
+            "name": "client.core.svp",
             "shortname": "svp",
             "classitems": [],
             "plugins": [],
@@ -105,14 +146,29 @@
             "plugin_for": [],
             "extension_for": [],
             "module": "SVP",
-            "namespace": "",
+            "namespace": "client.core",
             "file": "static/js/my.js",
             "line": 10,
             "description": "The base object for the application.",
             "static": 1
         },
-        "plugins": {
-            "name": "plugins",
+        "client.core.Plugin": {
+            "name": "client.core.Plugin",
+            "shortname": "Plugin",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "SVP",
+            "namespace": "client.core",
+            "file": "static/js/my.js",
+            "line": 826,
+            "description": "Plugin functionality, as amended by the SVP core. To view the plugin \nconstructor documentation, please see\n{{#crossLink \"client.api.Plugin\"}}here{{/crossLink}}.",
+            "extends": "client.api.Plugin"
+        },
+        "client.api.plugins": {
+            "name": "client.api.plugins",
             "shortname": "plugins",
             "classitems": [],
             "plugins": [],
@@ -120,14 +176,14 @@
             "plugin_for": [],
             "extension_for": [],
             "module": "PluginAPI",
-            "namespace": "",
+            "namespace": "client.api",
             "file": "static/js/plugins.js",
-            "line": 9,
+            "line": 10,
             "description": "The global object which core code can hook into.",
             "static": 1
         },
-        "Plugin": {
-            "name": "Plugin",
+        "client.api.Plugin": {
+            "name": "client.api.Plugin",
             "shortname": "Plugin",
             "classitems": [],
             "plugins": [],
@@ -135,10 +191,10 @@
             "plugin_for": [],
             "extension_for": [],
             "module": "PluginAPI",
-            "namespace": "",
+            "namespace": "client.api",
             "file": "static/js/plugins.js",
-            "line": 125,
-            "description": "Sets up a plugin constructor and adds it to the list, initializing it immediately\ndepending on the value of plugins.loaded.",
+            "line": 141,
+            "description": "Sets up a plugin constructor and adds it to the list, initializing it immediately\ndepending on the value of plugins.loaded.\n\nThis page documents the default Plugin object. Core code will usually extend it,\nso you should look at {{#crossLink \"client.core.Plugin\"}}{{/crossLink}} to see\nall of the functionality available to a plugin.",
             "is_constructor": 1,
             "params": [
                 {
@@ -153,8 +209,8 @@
                 }
             ]
         },
-        "WSChat": {
-            "name": "WSChat",
+        "client.core.WSChat": {
+            "name": "client.core.WSChat",
             "shortname": "WSChat",
             "classitems": [],
             "plugins": [],
@@ -162,11 +218,38 @@
             "plugin_for": [],
             "extension_for": [],
             "module": "WSChat",
-            "namespace": "",
+            "namespace": "client.core",
             "file": "static/js/wschat.js",
-            "line": 9,
+            "line": 10,
             "description": "The WSChat constructor (bad style...possible refactoring candidate?)",
             "is_constructor": 1
+        },
+        "protocols.WebTorrent": {
+            "name": "protocols.WebTorrent",
+            "shortname": "WebTorrent",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "webtorrent.py",
+            "namespace": "protocols",
+            "file": "wschat/plugins/webtorrent.py",
+            "line": 16,
+            "description": "The WebTorrent Protocol Specification and Documentation\n==================================================================\n\n\"Methods\" describe messages sent by clients to the server.\n\"Events\" describe messages received by clients from the server.\n\nA username must be supplied to use the WebTorrent protocol.\nIdentification is accomplished using the \"subprotocol\" feature\nof WebSockets.\n\n*(This protocol is in early alpha and is subject to change)*\n\nHow WebTorrent Works\n------------------------------------------------------------------\nWebTorrent allows files to be transmitted between clients by breaking\nup files and sending individual 2MB (that size is not finalized yet)\nblocks at a time. When a client would like to share a file, it must\nassign it a unique ID no longer than 64 characters (Usually the\nfilename, or a hash of it) and share that ID with the receiving client.\nThe receiving client then sends a tracking request broadcast, and the\ncurrent owner of the file must respond with a \"request\" (oops)\ncontaining more detailed information about the file. The receiving\nclient should then have enough information to begin requesting file\nblocks.\n\nAt any point, a client may send a \"request\" with a file id and block\nnumber to any other client. If that client has that block of that\nfile, it should respond with a binary message to the requesting\nclient containing a 64 character bytestring of the file ID\nfollowed by a two byte unsigned integer specifying the file block,\nand then the actual data of that block. If the client does not have\nthat block, it may ignore the request. It is up to the requesting\nclient to keep track of what blocks it has and what it needs.\n\n<br />\n*The parameters listed below should be supplied to the client side\nJavaScript WebSocket constructor.*",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "url",
+                    "description": "The appropriate WebSocket url",
+                    "type": "URL"
+                },
+                {
+                    "name": "names",
+                    "description": "An array of possible usernames for this client",
+                    "type": "Array"
+                }
+            ]
         }
     },
     "classitems": [
@@ -174,7 +257,7 @@
             "file": "static/js/bootstrap.min.js",
             "line": 1,
             "description": "Bootstrap.js by @fat & @mdo\nplugins: bootstrap-transition.js, bootstrap-modal.js, bootstrap-dropdown.js, bootstrap-scrollspy.js, bootstrap-tab.js, bootstrap-tooltip.js, bootstrap-popover.js, bootstrap-affix.js, bootstrap-alert.js, bootstrap-button.js, bootstrap-collapse.js, bootstrap-carousel.js, bootstrap-typeahead.js\nCopyright 2012 Twitter, Inc.\nhttp://www.apache.org/licenses/LICENSE-2.0.txt",
-            "class": "svp"
+            "class": "client.core.svp"
         },
         {
             "file": "static/js/my.js",
@@ -193,8 +276,9 @@
                 "description": "item",
                 "type": "String"
             },
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
@@ -214,8 +298,9 @@
                     "type": "Object"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
@@ -230,8 +315,9 @@
                     "type": "Number"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
@@ -246,8 +332,9 @@
                     "type": "Event"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
@@ -262,8 +349,9 @@
                     "type": "Event"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
@@ -278,8 +366,9 @@
                     "type": "String"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
@@ -287,8 +376,9 @@
             "description": "Broadcasts information about a state (playing/paused) change.",
             "itemtype": "method",
             "name": "broadcastStateChange",
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
@@ -296,8 +386,9 @@
             "description": "Called to reset who is being synced to when the local user takes an action.",
             "itemtype": "method",
             "name": "resetSync",
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
@@ -312,8 +403,9 @@
                     "type": "Object"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
@@ -337,8 +429,9 @@
                 "description": "true (upon successful completion)",
                 "type": "Mixed"
             },
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
@@ -353,30 +446,33 @@
                     "type": "String"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
-            "line": 461,
+            "line": 460,
             "description": "Turns the lights on!",
             "itemtype": "method",
             "name": "lightsOn",
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
-            "line": 473,
+            "line": 472,
             "description": "Turns the lights out!",
             "itemtype": "method",
             "name": "lightsOff",
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
-            "line": 487,
+            "line": 486,
             "description": "Called when a play/pause event is needed, for whatever reason.",
             "itemtype": "method",
             "name": "stateChange",
@@ -388,12 +484,13 @@
                     "optional": true
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
-            "line": 515,
+            "line": 514,
             "description": "Called when the player or a playpause button is clicked.",
             "itemtype": "method",
             "name": "playPause",
@@ -404,12 +501,13 @@
                     "type": "Event"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
-            "line": 532,
+            "line": 531,
             "description": "Called to process and display a chat message.",
             "itemtype": "method",
             "name": "recieveChat",
@@ -430,23 +528,25 @@
                     "optional": true
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
-            "line": 568,
+            "line": 567,
             "description": "The WSChat instance responsible for transmitting data between clients.",
             "itemtype": "property",
             "name": "ws",
             "type": "WSChat",
             "default": "WSChat();",
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
-            "line": 575,
+            "line": 574,
             "description": "Handles WSChat errors.",
             "itemtype": "method",
             "name": "wsError",
@@ -462,12 +562,13 @@
                     "type": "String"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
-            "line": 589,
+            "line": 588,
             "description": "Handles WSChat \"messages\".",
             "itemtype": "method",
             "name": "wsMessage",
@@ -488,12 +589,13 @@
                     "type": "Event"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
-            "line": 596,
+            "line": 595,
             "description": "Recieves private WebSocket plugin messages.",
             "itemtype": "event",
             "name": "plugin",
@@ -505,12 +607,13 @@
                     "type": "Mixed"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
-            "line": 640,
+            "line": 639,
             "description": "Handles WSChat \"broadcasts\".",
             "itemtype": "method",
             "name": "wsBroadcast",
@@ -531,12 +634,13 @@
                     "type": "Event"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
-            "line": 647,
+            "line": 646,
             "description": "Recieves special WSChat plugin broadcasts that are independent of the current video ID.",
             "itemtype": "event",
             "name": "pluginGlobal",
@@ -548,12 +652,13 @@
                     "type": "Mixed"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
-            "line": 652,
+            "line": 651,
             "description": "Recieves WSChat plugin broadcast messages.",
             "itemtype": "event",
             "name": "pluginBroadcast",
@@ -565,12 +670,13 @@
                     "type": "Mixed"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
-            "line": 704,
+            "line": 703,
             "description": "Handles WSChat quits (when another client disconnects).",
             "itemtype": "method",
             "name": "wsQuit",
@@ -586,12 +692,13 @@
                     "type": "Event"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
-            "line": 741,
+            "line": 740,
             "description": "Called on initialization of the WSChat client.",
             "itemtype": "event",
             "name": "init",
@@ -602,12 +709,13 @@
                     "type": "String"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/my.js",
-            "line": 746,
+            "line": 745,
             "description": "Initializes the WSChat client.",
             "itemtype": "method",
             "name": "initializeClient",
@@ -618,53 +726,93 @@
                     "type": "String"
                 }
             ],
-            "class": "svp",
-            "module": "SVP"
+            "class": "client.core.svp",
+            "module": "SVP",
+            "namespace": "client.core"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 834,
+            "description": "Creates a new element for a plugin to use.",
+            "itemtype": "method",
+            "name": "requestDiv",
+            "params": [
+                {
+                    "name": "size=0",
+                    "description": "Pass a zero for a smaller-width container or a one\nfor a larger container. Other sizes do not exist at this time.",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "a jQuery array containing a single div",
+                "type": "JQuery Array"
+            },
+            "class": "client.core.Plugin",
+            "module": "SVP",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/plugins.js",
-            "line": 15,
+            "line": 17,
+            "description": "An object that holds assembled plugin constructors to prevent reloading.",
+            "itemtype": "property",
+            "name": "plugins",
+            "access": "protected",
+            "tagname": "",
+            "type": "{Object}",
+            "default": "{}",
+            "class": "client.api.plugins",
+            "module": "PluginAPI",
+            "namespace": "client.api"
+        },
+        {
+            "file": "static/js/plugins.js",
+            "line": 26,
             "description": "Set by the core code when all preset plugins have been initialized\nand it is ready. It allows plugins loaded in the future to be\ninstantiated immediately.",
-            "class": "plugins",
-            "module": "PluginAPI"
+            "class": "client.api.plugins",
+            "module": "PluginAPI",
+            "namespace": "client.api"
         },
         {
             "file": "static/js/plugins.js",
-            "line": 22,
+            "line": 33,
             "description": "Holds arrays of event callbacks.",
             "itemtype": "property",
             "name": "handlers",
             "access": "private",
             "tagname": "",
-            "class": "plugins",
-            "module": "PluginAPI"
+            "class": "client.api.plugins",
+            "module": "PluginAPI",
+            "namespace": "client.api"
         },
         {
             "file": "static/js/plugins.js",
-            "line": 28,
+            "line": 39,
             "description": "Holds arrays of editor callbacks.",
             "itemtype": "property",
-            "name": "handlers",
+            "name": "editors",
             "access": "private",
             "tagname": "",
-            "class": "plugins",
-            "module": "PluginAPI"
+            "class": "client.api.plugins",
+            "module": "PluginAPI",
+            "namespace": "client.api"
         },
         {
             "file": "static/js/plugins.js",
-            "line": 34,
+            "line": 45,
             "description": "Holds arrays of string filters.",
             "itemtype": "property",
             "name": "filters",
             "access": "private",
             "tagname": "",
-            "class": "plugins",
-            "module": "PluginAPI"
+            "class": "client.api.plugins",
+            "module": "PluginAPI",
+            "namespace": "client.api"
         },
         {
             "file": "static/js/plugins.js",
-            "line": 41,
-            "description": "Loads all preset plugins and tells future plugins to load immediately.",
+            "line": 52,
+            "description": "Loads all preloaded plugins and tells future plugins to load immediately.",
             "itemtype": "method",
             "name": "init",
             "params": [
@@ -675,12 +823,13 @@
                 }
             ],
             "beta": 1,
-            "class": "plugins",
-            "module": "PluginAPI"
+            "class": "client.api.plugins",
+            "module": "PluginAPI",
+            "namespace": "client.api"
         },
         {
             "file": "static/js/plugins.js",
-            "line": 53,
+            "line": 64,
             "description": "Core code should call this to post an event for plugins to catch.",
             "itemtype": "method",
             "name": "event",
@@ -699,12 +848,13 @@
             "example": [
                 " \n    plugins.event(null,arguments); // will use the name of the callee from the arguments variable"
             ],
-            "class": "plugins",
-            "module": "PluginAPI"
+            "class": "client.api.plugins",
+            "module": "PluginAPI",
+            "namespace": "client.api"
         },
         {
             "file": "static/js/plugins.js",
-            "line": 68,
+            "line": 84,
             "description": "Core code should call this to allow plugins to filter certain strings.",
             "itemtype": "method",
             "name": "filter",
@@ -725,12 +875,13 @@
                 "description": "The (possibly) filtered message",
                 "type": "String"
             },
-            "class": "plugins",
-            "module": "PluginAPI"
+            "class": "client.api.plugins",
+            "module": "PluginAPI",
+            "namespace": "client.api"
         },
         {
             "file": "static/js/plugins.js",
-            "line": 82,
+            "line": 98,
             "description": "Core code should call this to allow plugins to make changes to arbitrary objects\nor change default behaviors.",
             "itemtype": "method",
             "name": "editor",
@@ -750,12 +901,13 @@
                 "description": "The (possibly) edited object",
                 "type": "Mixed"
             },
-            "class": "plugins",
-            "module": "PluginAPI"
+            "class": "client.api.plugins",
+            "module": "PluginAPI",
+            "namespace": "client.api"
         },
         {
             "file": "static/js/plugins.js",
-            "line": 101,
+            "line": 117,
             "description": "Mostly a wrapper around a jQuery.getScript call, it provides some URL help.",
             "itemtype": "method",
             "name": "load",
@@ -780,12 +932,13 @@
                 "description": "The jQueryXHR object for the AJAX request",
                 "type": "JqXHR"
             },
-            "class": "plugins",
-            "module": "PluginAPI"
+            "class": "client.api.plugins",
+            "module": "PluginAPI",
+            "namespace": "client.api"
         },
         {
             "file": "static/js/plugins.js",
-            "line": 143,
+            "line": 165,
             "description": "Registers a event handler with the plugin API.",
             "itemtype": "method",
             "name": "register",
@@ -805,12 +958,13 @@
                 "description": "The registration ID, can be used to unregister the handler later.",
                 "type": "Number"
             },
-            "class": "Plugin",
-            "module": "PluginAPI"
+            "class": "client.api.Plugin",
+            "module": "PluginAPI",
+            "namespace": "client.api"
         },
         {
             "file": "static/js/plugins.js",
-            "line": 153,
+            "line": 175,
             "description": "Registers a event handler with the plugin API.",
             "itemtype": "method",
             "name": "useEditor",
@@ -830,12 +984,13 @@
                 "description": "The registration ID, can be used to unregister the editor later.",
                 "type": "Number"
             },
-            "class": "Plugin",
-            "module": "PluginAPI"
+            "class": "client.api.Plugin",
+            "module": "PluginAPI",
+            "namespace": "client.api"
         },
         {
             "file": "static/js/plugins.js",
-            "line": 163,
+            "line": 185,
             "description": "Registers a string filter with the plugin API.",
             "itemtype": "method",
             "name": "useFilter",
@@ -855,47 +1010,65 @@
                 "description": "The registration ID, can be used to unregister the filter later. (Note: unregistering is not implemented yet.)",
                 "type": "Number"
             },
-            "class": "Plugin",
-            "module": "PluginAPI"
+            "class": "client.api.Plugin",
+            "module": "PluginAPI",
+            "namespace": "client.api"
+        },
+        {
+            "file": "static/js/plugins.js",
+            "line": 199,
+            "description": "Creates a new element for a plugin to use.\n*This method is designed to be overwritten by the core code.*",
+            "itemtype": "method",
+            "name": "requestDiv",
+            "return": {
+                "description": "a jQuery array containing a single div",
+                "type": "JQuery Array"
+            },
+            "class": "client.api.Plugin",
+            "module": "PluginAPI",
+            "namespace": "client.api"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 16,
+            "line": 17,
             "description": "The number of times this client has tried to connect to the server\nsince the last success.",
             "itemtype": "attribute",
             "name": "retries",
             "readonly": "",
             "type": "Number",
             "default": "0",
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 25,
+            "line": 26,
             "description": "Whether this client is currently connected.",
             "itemtype": "attribute",
             "name": "closed",
             "readonly": "",
             "type": "Boolean",
             "default": "true",
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 33,
+            "line": 34,
             "description": "Whether this client should log debug info to the browser console.",
             "itemtype": "property",
             "name": "log",
             "type": "Boolean",
             "default": "false",
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 41,
+            "line": 42,
             "description": "Initializes a WSChat client and connects to the specified server.",
             "itemtype": "method",
             "name": "init",
@@ -917,12 +1090,13 @@
                     "optional": true
                 }
             ],
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 55,
+            "line": 56,
             "description": "The underlying WebSocket instance that handles the raw communication.",
             "itemtype": "property",
             "name": "socket",
@@ -930,12 +1104,13 @@
             "tagname": "",
             "type": "WebSocket",
             "default": "new WebSocket(url);",
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 110,
+            "line": 111,
             "description": "Sends a message to the specified client.",
             "itemtype": "method",
             "name": "message",
@@ -951,12 +1126,13 @@
                     "type": "String"
                 }
             ],
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 119,
+            "line": 120,
             "description": "Broadcasts a message to all connected clients.",
             "itemtype": "method",
             "name": "broadcast",
@@ -967,12 +1143,13 @@
                     "type": "String"
                 }
             ],
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 127,
+            "line": 128,
             "description": "Performs the actual sending operation.",
             "itemtype": "method",
             "name": "send",
@@ -985,21 +1162,23 @@
                     "type": "Object"
                 }
             ],
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 139,
+            "line": 140,
             "description": "Closes the underlying websocket. However, unless the WSChat instance\nis in noretry mode it will immediately attempt to reopen the connection.",
             "itemtype": "method",
             "name": "close",
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 147,
+            "line": 148,
             "description": "Called on receipt of a message.",
             "itemtype": "event",
             "name": "onmessage",
@@ -1020,12 +1199,13 @@
                     "type": "Event"
                 }
             ],
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 155,
+            "line": 156,
             "description": "Called on receipt of a broadcast.",
             "itemtype": "event",
             "name": "onbroadcast",
@@ -1046,12 +1226,13 @@
                     "type": "Event"
                 }
             ],
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 163,
+            "line": 164,
             "description": "Called on receipt of a WSChat error.",
             "itemtype": "event",
             "name": "onerror",
@@ -1073,12 +1254,13 @@
                     "optional": true
                 }
             ],
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 171,
+            "line": 172,
             "description": "Called when a websocket error occurs.",
             "itemtype": "event",
             "name": "onwserror",
@@ -1089,12 +1271,13 @@
                     "type": "Event"
                 }
             ],
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 177,
+            "line": 178,
             "description": "Called when a client disconnects from the server.",
             "itemtype": "event",
             "name": "onquit",
@@ -1110,12 +1293,13 @@
                     "type": "Event"
                 }
             ],
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 184,
+            "line": 185,
             "description": "Called when the websocket closes for any reason.",
             "itemtype": "event",
             "name": "onclose",
@@ -1126,12 +1310,13 @@
                     "type": "Event"
                 }
             ],
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
         },
         {
             "file": "static/js/wschat.js",
-            "line": 190,
+            "line": 191,
             "description": "Called on a successful connection and identification to the server.",
             "itemtype": "event",
             "name": "onconnected",
@@ -1142,8 +1327,142 @@
                     "type": "String"
                 }
             ],
-            "class": "WSChat",
-            "module": "WSChat"
+            "class": "client.core.WSChat",
+            "module": "WSChat",
+            "namespace": "client.core"
+        },
+        {
+            "file": "wschat/plugins/webtorrent.py",
+            "line": 72,
+            "description": "If a message begins with an ASCII NUL (\"\\0\"), it is interpreted\nas a binary message, otherwise it is assumed to be JSON.\n\nIf a client tries to send a message without having identified\nproperly (without specifying a username), they will simply be\ndisconnected.",
+            "itemtype": "method",
+            "name": "Any Message",
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/plugins/webtorrent.py",
+            "line": 81,
+            "description": "After the signifying first NUL byte, a binary message should\nspecify the client(s) to forward the message to, terminated\nby another NUL. The entire message after that NUL will then\nbe forwarded directly to the specified clients(s).\n\n*Sending binary messages to multiple clients at once has\nnot been implemented yet.*",
+            "itemtype": "method",
+            "name": "Binary Message",
+            "params": [
+                {
+                    "name": "to",
+                    "description": "The client to send to",
+                    "type": "NUL-terminated String"
+                },
+                {
+                    "name": "message",
+                    "description": "The message to send",
+                    "type": "Bytes"
+                }
+            ],
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/plugins/webtorrent.py",
+            "line": 93,
+            "description": "When one client sends a binary message, the receiver will\nreceive the exact message, but with no \"from\" information.",
+            "itemtype": "event",
+            "name": "Binary Message",
+            "params": [
+                {
+                    "name": "message",
+                    "description": "The sent message",
+                    "type": "Bytes"
+                }
+            ],
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/plugins/webtorrent.py",
+            "line": 111,
+            "description": "JSON messages can be either fileblock requests or tracking\nbroadcasts.",
+            "itemtype": "method",
+            "name": "JSON Message",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "Either \"tracking\" or \"request\"",
+                    "type": "String"
+                }
+            ],
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/plugins/webtorrent.py",
+            "line": 117,
+            "description": "A \"tracking\" message will be broadcast to all connected\nclients as is, except a \"from\" parameter will be added to\nspecify the sender.",
+            "itemtype": "method",
+            "name": "JSON type:tracking",
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/plugins/webtorrent.py",
+            "line": 123,
+            "description": "A \"request\" message will be forwarded as is to the specified\nclient, with a \"from\" parameter added to specify the sender.\nIf the specified receiver is invalid, a JSON message of type\n\"error\" and error \"badclient\", with a \"message\" attribute\ncontaining the original message, will be sent.",
+            "itemtype": "method",
+            "name": "JSON type:request",
+            "params": [
+                {
+                    "name": "to",
+                    "description": "The client to send to",
+                    "type": "String"
+                }
+            ],
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/plugins/webtorrent.py",
+            "line": 154,
+            "description": "If the sent message is the string \"list\", a list of\nconnected clients will be printed to stdout.",
+            "itemtype": "method",
+            "name": "list",
+            "access": "private",
+            "tagname": "",
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/plugins/webtorrent.py",
+            "line": 166,
+            "description": "When one client disconnects, all other clients receive this\nmessage (for tracking purposes).",
+            "itemtype": "event",
+            "name": "JSON type:quit",
+            "params": [
+                {
+                    "name": "who",
+                    "description": "The name of the client that disconnected",
+                    "type": "String"
+                }
+            ],
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/plugins/webtorrent.py",
+            "line": 181,
+            "description": "The server will pick the first specified username that is\navailable and return it, allowing the client to determine\nwhat username is in use through the \"protocol\" attribute\nof the JavaScript WebSocket. If none is available, the\nserver will close the connection, although the client is\nfree to try to connect again with the same or different\nusernames.",
+            "itemtype": "property",
+            "name": "WebSocket.protocol",
+            "type": "String",
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
         }
     ],
     "warnings": [
@@ -1153,7 +1472,7 @@
         },
         {
             "message": "Missing item type\nSet by the core code when all preset plugins have been initialized\nand it is ready. It allows plugins loaded in the future to be\ninstantiated immediately.",
-            "line": " static/js/plugins.js:15"
+            "line": " static/js/plugins.js:26"
         }
     ]
 }

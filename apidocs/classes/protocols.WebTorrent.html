@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>protocols.WebTorrent - SocialVideoPlayer API</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1>
+		  <img src="http://baryon5.github.io/socialvp/logo.png" width="64" style="float:left">
+		  <div style="padding-top: 8px;">SocialVideoPlayer API<br />
+		    <span style="font-size:0.8em">The API for the Social Video Player, for use in developing plugins.</span>
+		  </div>
+		</h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for v1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/client.api.Plugin.html">client.api.Plugin</a></li>
+            
+                <li><a href="../classes/client.api.plugins.html">client.api.plugins</a></li>
+            
+                <li><a href="../classes/client.core.Plugin.html">client.core.Plugin</a></li>
+            
+                <li><a href="../classes/client.core.svp.html">client.core.svp</a></li>
+            
+                <li><a href="../classes/client.core.WSChat.html">client.core.WSChat</a></li>
+            
+                <li><a href="../classes/protocols.WebTorrent.html">protocols.WebTorrent</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/PluginAPI.html">PluginAPI</a></li>
+            
+                <li><a href="../modules/SVP.html">SVP</a></li>
+            
+                <li><a href="../modules/webtorrent.py.html">webtorrent.py</a></li>
+            
+                <li><a href="../modules/WSChat.html">WSChat</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1>protocols.WebTorrent Class</h1>
+<div class="box meta">
+    
+
+    
+
+    
+        <div class="foundat">
+            Defined in: <a href="../files/wschat_plugins_webtorrent.py.html#l16"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:16</code></a>
+        </div>
+    
+
+    
+        
+            Module: <a href="../modules/webtorrent.py.html">webtorrent.py</a>
+        
+    
+
+    
+</div>
+
+
+
+<div class="box intro">
+    <h1>The WebTorrent Protocol Specification and Documentation</h1>
+<p>&quot;Methods&quot; describe messages sent by clients to the server.
+&quot;Events&quot; describe messages received by clients from the server.</p>
+<p>A username must be supplied to use the WebTorrent protocol.
+Identification is accomplished using the &quot;subprotocol&quot; feature
+of WebSockets.</p>
+<p><em>(This protocol is in early alpha and is subject to change)</em></p>
+<h2>How WebTorrent Works</h2>
+<p>WebTorrent allows files to be transmitted between clients by breaking
+up files and sending individual 2MB (that size is not finalized yet)
+blocks at a time. When a client would like to share a file, it must
+assign it a unique ID no longer than 64 characters (Usually the
+filename, or a hash of it) and share that ID with the receiving client.
+The receiving client then sends a tracking request broadcast, and the
+current owner of the file must respond with a &quot;request&quot; (oops)
+containing more detailed information about the file. The receiving
+client should then have enough information to begin requesting file
+blocks.</p>
+<p>At any point, a client may send a &quot;request&quot; with a file id and block
+number to any other client. If that client has that block of that
+file, it should respond with a binary message to the requesting
+client containing a 64 character bytestring of the file ID
+followed by a two byte unsigned integer specifying the file block,
+and then the actual data of that block. If the client does not have
+that block, it may ignore the request. It is up to the requesting
+client to keep track of what blocks it has and what it needs.</p>
+<p><br />
+<em>The parameters listed below should be supplied to the client side
+JavaScript WebSocket constructor.</em></p>
+
+</div>
+
+
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_protocols.WebTorrent" class="method item">
+    <h3 class="name"><code>protocols.WebTorrent</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>url</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>names</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/wschat_plugins_webtorrent.py.html#l16"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:16</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">url</code>
+                        <span class="type">URL</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The appropriate WebSocket url</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">names</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>An array of possible usernames for this client</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+    </div>
+
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+        
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+        
+        
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
+        
+        
+            <li class="api-class-tab events"><a href="#events">Events</a></li>
+        
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
+            
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods">
+                        
+                            <li class="index-item method">
+                                <a href="#method_Any Message">Any Message</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_Binary Message">Binary Message</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_JSON Message">JSON Message</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_JSON type:request">JSON type:request</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_JSON type:tracking">JSON type:tracking</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method_list">list</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties">
+                        
+                            <li class="index-item property">
+                                <a href="#property_WebSocket.protocol">WebSocket.protocol</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+
+            
+                <div class="index-section events">
+                    <h3>Events</h3>
+
+                    <ul class="index-list events">
+                        
+                            <li class="index-item event">
+                                <a href="#event_Binary Message">Binary Message</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item event">
+                                <a href="#event_JSON type:quit">JSON type:quit</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+        </div>
+
+        
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_Any Message" class="method item">
+    <h3 class="name"><code>Any Message</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/wschat_plugins_webtorrent.py.html#l72"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:72</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>If a message begins with an ASCII NUL (&quot;\0&quot;), it is interpreted
+as a binary message, otherwise it is assumed to be JSON.</p>
+<p>If a client tries to send a message without having identified
+properly (without specifying a username), they will simply be
+disconnected.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_Binary Message" class="method item">
+    <h3 class="name"><code>Binary Message</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>to</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>message</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/wschat_plugins_webtorrent.py.html#l81"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:81</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>After the signifying first NUL byte, a binary message should
+specify the client(s) to forward the message to, terminated
+by another NUL. The entire message after that NUL will then
+be forwarded directly to the specified clients(s).</p>
+<p><em>Sending binary messages to multiple clients at once has
+not been implemented yet.</em></p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">to</code>
+                        <span class="type">NUL-terminated String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The client to send to</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">message</code>
+                        <span class="type">Bytes</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The message to send</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_JSON Message" class="method item">
+    <h3 class="name"><code>JSON Message</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/wschat_plugins_webtorrent.py.html#l111"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:111</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>JSON messages can be either fileblock requests or tracking
+broadcasts.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Either &quot;tracking&quot; or &quot;request&quot;</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_JSON type:request" class="method item">
+    <h3 class="name"><code>JSON type:request</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>to</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/wschat_plugins_webtorrent.py.html#l123"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:123</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A &quot;request&quot; message will be forwarded as is to the specified
+client, with a &quot;from&quot; parameter added to specify the sender.
+If the specified receiver is invalid, a JSON message of type
+&quot;error&quot; and error &quot;badclient&quot;, with a &quot;message&quot; attribute
+containing the original message, will be sent.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">to</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The client to send to</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_JSON type:tracking" class="method item">
+    <h3 class="name"><code>JSON type:tracking</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/wschat_plugins_webtorrent.py.html#l117"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:117</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A &quot;tracking&quot; message will be broadcast to all connected
+clients as is, except a &quot;from&quot; parameter will be added to
+specify the sender.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_list" class="method item private">
+    <h3 class="name"><code>list</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/wschat_plugins_webtorrent.py.html#l154"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:154</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>If the sent message is the string &quot;list&quot;, a list of
+connected clients will be printed to stdout.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
+        
+
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_WebSocket.protocol" class="property item">
+    <h3 class="name"><code>WebSocket.protocol</code></h3>
+    <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/wschat_plugins_webtorrent.py.html#l181"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:181</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The server will pick the first specified username that is
+available and return it, allowing the client to determine
+what username is in use through the &quot;protocol&quot; attribute
+of the JavaScript WebSocket. If none is available, the
+server will close the connection, although the client is
+free to try to connect again with the same or different
+usernames.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
+        
+
+        
+
+        
+            <div id="events" class="api-class-tabpanel">
+                <h2 class="off-left">Events</h2>
+
+                
+                    <div id="event_Binary Message" class="events item">
+    <h3 class="name"><code>Binary Message</code></h3>
+    <span class="type"></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/wschat_plugins_webtorrent.py.html#l93"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:93</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>When one client sends a binary message, the receiver will
+receive the exact message, but with no &quot;from&quot; information.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Event Payload:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">message</code>
+                        <span class="type">Bytes</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The sent message</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+
+    
+</div>
+
+                
+                    <div id="event_JSON type:quit" class="events item">
+    <h3 class="name"><code>JSON type:quit</code></h3>
+    <span class="type"></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/wschat_plugins_webtorrent.py.html#l166"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:166</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>When one client disconnects, all other clients receive this
+message (for tracking purposes).</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Event Payload:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">who</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The name of the client that disconnected</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+
+    
+</div>
+
+                
+            </div>
+        
+    </div>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

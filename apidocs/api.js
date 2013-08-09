@@ -1,15 +1,18 @@
 YUI.add("yuidoc-meta", function(Y) {
    Y.YUIDoc = { meta: {
     "classes": [
-        "Plugin",
-        "WSChat",
-        "plugins",
-        "svp"
+        "client.api.Plugin",
+        "client.api.plugins",
+        "client.core.Plugin",
+        "client.core.WSChat",
+        "client.core.svp",
+        "protocols.WebTorrent"
     ],
     "modules": [
         "PluginAPI",
         "SVP",
-        "WSChat"
+        "WSChat",
+        "webtorrent.py"
     ],
     "allModules": [
         {
@@ -21,6 +24,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "SVP",
             "name": "SVP",
             "description": "Social Video Player"
+        },
+        {
+            "displayName": "webtorrent.py",
+            "name": "webtorrent.py",
+            "description": "WebTorrent server plugin module"
         },
         {
             "displayName": "WSChat",

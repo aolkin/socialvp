@@ -20,7 +20,8 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="javascript:location.reload();">Social Video Player</a>
+	  <img src="img/logo.png" />
+          <a class="brand">Social Video Player</a>
           <div class="nav-collapse collapse pull-right">
             <ul class="nav">
               <li><a href="/" onclick="localStorage.removeItem('svpUsername')">
@@ -37,11 +38,15 @@
       </div>
     </div>
 
-    <div class="container-fluid hide fade in">
+    <div class="container-fluid">
       <div class="row-fluid">
 	<div class="span8">
-	  <video width="100%" src="" id="player"><p class="text-error"><i class="icon-warning-sign"></i>
-	      Sorry, your browser does not support this app!</p></video><br />
+	  <video width="100%" src="" id="player" poster="img/poster.png">
+	    <p class="text-error">
+	      <i class="icon-warning-sign"></i>
+	      Sorry, your browser does not support this app!
+	    </p>
+	  </video><br />
 	  <div class="row-fluid">
 	    <div class="span1">
 	      <button class="btn playpause"><i class="icon-play"></i></button>
@@ -96,7 +101,7 @@
       </div>
     </div>
 
-    <div id="load-video-modal" class="modal fade" data-show="true" tabindex="-1">
+    <div id="load-video-modal" class="modal fade hide" data-show="true" tabindex="-1">
       <div class="modal-header">
 	<button class="close" data-dismiss="modal">&times;</button>
 	<h3>Load a New Video</h3>
@@ -112,7 +117,7 @@
       </div>
     </div>
 
-    <div id="load-plugin-modal" class="modal fade" tabindex="-1">
+    <div id="load-plugin-modal" class="modal fade hide" tabindex="-1">
       <div class="modal-header">
 	<button class="close" data-dismiss="modal">&times;</button>
 	<h3>Load Plugins</h3>
@@ -124,7 +129,7 @@
       </div>
     </div>
 
-    <div id="set-name-modal" class="modal fade" tabindex="-1">
+    <div id="set-name-modal" class="modal fade hide" tabindex="-1">
       <div class="modal-header">
 	<h3>Set Username</h3>
       </div>
@@ -140,7 +145,7 @@
       </div>
     </div>
 
-    <div id="get-link-modal" class="modal fade" tabindex="-1">
+    <div id="get-link-modal" class="modal fade hide" tabindex="-1">
       <div class="modal-header">
 	<button class="close" data-dismiss="modal">&times;</button>
 	<h3>Video Sharing Link</h3>
