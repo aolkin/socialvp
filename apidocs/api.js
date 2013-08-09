@@ -3,6 +3,7 @@ YUI.add("yuidoc-meta", function(Y) {
     "classes": [
         "client.api.Plugin",
         "client.api.plugins",
+        "client.core.Plugin",
         "client.core.WSChat",
         "client.core.svp",
         "protocols.WebTorrent"

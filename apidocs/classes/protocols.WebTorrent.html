@@ -50,6 +50,8 @@
             
                 <li><a href="../classes/client.api.plugins.html">client.api.plugins</a></li>
             
+                <li><a href="../classes/client.core.Plugin.html">client.core.Plugin</a></li>
+            
                 <li><a href="../classes/client.core.svp.html">client.core.svp</a></li>
             
                 <li><a href="../classes/client.core.WSChat.html">client.core.WSChat</a></li>
@@ -127,13 +129,34 @@
 
 
 <div class="box intro">
-    <p>The WebTorrent Protocol specification and usage notes/documentation</p>
+    <h1>The WebTorrent Protocol Specification and Documentation</h1>
 <p>&quot;Methods&quot; describe messages sent by clients to the server.
-&quot;Events&quot; describe messages recieved by clients from the server.</p>
-<p>A username must be supplied to use thw WebTorrent protocol.
+&quot;Events&quot; describe messages received by clients from the server.</p>
+<p>A username must be supplied to use the WebTorrent protocol.
 Identification is accomplished using the &quot;subprotocol&quot; feature
 of WebSockets.</p>
-<p><em>The parameters listed below should be supplied to the client side
+<p><em>(This protocol is in early alpha and is subject to change)</em></p>
+<h2>How WebTorrent Works</h2>
+<p>WebTorrent allows files to be transmitted between clients by breaking
+up files and sending individual 2MB (that size is not finalized yet)
+blocks at a time. When a client would like to share a file, it must
+assign it a unique ID no longer than 64 characters (Usually the
+filename, or a hash of it) and share that ID with the receiving client.
+The receiving client then sends a tracking request broadcast, and the
+current owner of the file must respond with a &quot;request&quot; (oops)
+containing more detailed information about the file. The receiving
+client should then have enough information to begin requesting file
+blocks.</p>
+<p>At any point, a client may send a &quot;request&quot; with a file id and block
+number to any other client. If that client has that block of that
+file, it should respond with a binary message to the requesting
+client containing a 64 character bytestring of the file ID
+followed by a two byte unsigned integer specifying the file block,
+and then the actual data of that block. If the client does not have
+that block, it may ignore the request. It is up to the requesting
+client to keep track of what blocks it has and what it needs.</p>
+<p><br />
+<em>The parameters listed below should be supplied to the client side
 JavaScript WebSocket constructor.</em></p>
 
 </div>
@@ -293,6 +316,34 @@ JavaScript WebSocket constructor.</em></p>
                                 
                             </li>
                         
+                            <li class="index-item method">
+                                <a href="#method_JSON Message">JSON Message</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_JSON type:request">JSON type:request</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_JSON type:tracking">JSON type:tracking</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method_list">list</a>
+
+                                
+                                
+                            </li>
+                        
                     </ul>
                 </div>
             
@@ -321,6 +372,13 @@ JavaScript WebSocket constructor.</em></p>
                     <h3>Events</h3>
 
                     <ul class="index-list events">
+                        
+                            <li class="index-item event">
+                                <a href="#event_Binary Message">Binary Message</a>
+
+                                
+                                
+                            </li>
                         
                             <li class="index-item event">
                                 <a href="#event_JSON type:quit">JSON type:quit</a>
@@ -371,7 +429,7 @@ JavaScript WebSocket constructor.</em></p>
             
         
         
-        <a href="../files/wschat_plugins_webtorrent.py.html#l46"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:46</code></a>
+        <a href="../files/wschat_plugins_webtorrent.py.html#l72"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:72</code></a>
         
         </p>
 
@@ -446,7 +504,7 @@ disconnected.</p>
             
         
         
-        <a href="../files/wschat_plugins_webtorrent.py.html#l55"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:55</code></a>
+        <a href="../files/wschat_plugins_webtorrent.py.html#l81"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:81</code></a>
         
         </p>
 
@@ -514,6 +572,304 @@ not been implemented yet.</em></p>
 </div>
 
                 
+                    <div id="method_JSON Message" class="method item">
+    <h3 class="name"><code>JSON Message</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/wschat_plugins_webtorrent.py.html#l109"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:109</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>JSON messages can be either fileblock requests or tracking
+broadcasts.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Either &quot;tracking&quot; or &quot;request&quot;</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_JSON type:request" class="method item">
+    <h3 class="name"><code>JSON type:request</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>to</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/wschat_plugins_webtorrent.py.html#l121"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:121</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A &quot;request&quot; message will be forwarded as is to the specified
+client, with a &quot;from&quot; parameter added to specify the sender.
+If the specified receiver is invalid, a JSON message of type
+&quot;error&quot; and error &quot;badclient&quot;, with a &quot;message&quot; attribute
+containing the original message, will be sent.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">to</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The client to send to</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_JSON type:tracking" class="method item">
+    <h3 class="name"><code>JSON type:tracking</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/wschat_plugins_webtorrent.py.html#l115"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:115</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A &quot;tracking&quot; message will be broadcast to all connected
+clients as is, except a &quot;from&quot; parameter will be added to
+specify the sender.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_list" class="method item private">
+    <h3 class="name"><code>list</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/wschat_plugins_webtorrent.py.html#l147"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:147</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>If the sent message is the string &quot;list&quot;, a list of
+connected clients will be printed to stdout.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
             </div>
         
 
@@ -545,7 +901,7 @@ not been implemented yet.</em></p>
             
         
         
-        <a href="../files/wschat_plugins_webtorrent.py.html#l116"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:116</code></a>
+        <a href="../files/wschat_plugins_webtorrent.py.html#l174"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:174</code></a>
         
         </p>
 
@@ -583,6 +939,75 @@ usernames.</p>
                 <h2 class="off-left">Events</h2>
 
                 
+                    <div id="event_Binary Message" class="events item">
+    <h3 class="name"><code>Binary Message</code></h3>
+    <span class="type"></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/wschat_plugins_webtorrent.py.html#l93"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:93</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>When one client sends a binary message, the receiver will
+receive the exact message, but with no &quot;from&quot; information.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Event Payload:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">message</code>
+                        <span class="type">Bytes</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The sent message</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+
+    
+</div>
+
+                
                     <div id="event_JSON type:quit" class="events item">
     <h3 class="name"><code>JSON type:quit</code></h3>
     <span class="type"></span>
@@ -606,7 +1031,7 @@ usernames.</p>
             
         
         
-        <a href="../files/wschat_plugins_webtorrent.py.html#l101"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:101</code></a>
+        <a href="../files/wschat_plugins_webtorrent.py.html#l159"><code>wschat&#x2F;plugins&#x2F;webtorrent.py:159</code></a>
         
         </p>
 
@@ -616,7 +1041,7 @@ usernames.</p>
     </div>
 
     <div class="description">
-        <p>When one client disconnects, all other clients recieve this
+        <p>When one client disconnects, all other clients receive this
 message (for tracking purposes).</p>
 
     </div>

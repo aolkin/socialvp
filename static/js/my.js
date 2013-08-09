@@ -754,7 +754,15 @@ $(function(){
 	    $("#load-video-modal").modal('hide');
 	    svp.ws.onconnected = function(e) {
 		svp.joinid = location.hash.substr(6);
-		svp.ws.broadcast({type:"join",id:svp.joinid}); }
+		if (svp.joinid.substr(0,6) == "plugin") {
+		    parts = svp.joinid.substr(7).split(":");
+		    plugins.load("plugins/"+parts[0],function(){
+			svp.ws.broadcast({type:"join",id:svp.joinid});
+		    },function(){console.log(arguments[2].toString());});
+		} else {
+		    svp.ws.broadcast({type:"join",id:svp.joinid});
+		}
+	    }
 	}
 	svp.ws.init("ws://"+location.host+"/wschat",name);
 	plugins.event(null,arguments);
@@ -765,6 +773,34 @@ $(function(){
 	keyboard: false,
 	show: true
     }).modal('show');
+    $("#load-plugin-modal").modal({
+	show: false
+    }).on("show",function(){
+	$.getJSON("/pluginlist",function(data,status) {
+	    for (i in data) {
+		if (!document.getElementById(i)) {
+		    $("<button>").appendTo("#load-plugin-modal .modal-body")
+			.addClass("btn").text('Load "'+i+'"').prop("id",i)
+			.data("plugin",data[i]).data("pname",i).click(function(e){
+			    $(this).prop("disabled","disabled").text("Loading...");
+			    plugins.load($(this).data("plugin"),$.proxy(function(){
+				$(this).prop("disabled","disabled")
+				    .text('Loaded "'+$(this).data("pname")+'"');
+			    },this),$.proxy(function(xhr,err,e){
+				console.log("Plugin loading error:",err,e);
+				$(this).text('Load "'+$(this).data("pname")+'"')
+				    .prop("disabled","");
+				$("<div>").appendTo($(this).parent()).append(
+				    '<button class="close" data-dismiss="alert">&times;</button>'
+					+'<strong>Failed to load plugin!</strong>')
+				    .css({position:"absolute",bottom:0})
+				    .addClass("alert alert-error").delay(2000).fadeOut(500);
+			    },this));
+			});
+		}
+	    }
+	});
+    });
     
     if (location.hash.substr(1,10) == "error:name") {
 	$("#nickname").val(localStorage.svpUsername);
@@ -786,6 +822,33 @@ $(function(){
 	    init(name);
 	}
     })
+
+    /**
+       Plugin functionality, as amended by the SVP core. To view the plugin 
+       constructor documentation, please see
+       {{#crossLink "client.api.Plugin"}}here{{/crossLink}}.
+       @class Plugin
+       @extends client.api.Plugin
+    */
+
+    /**
+       Creates a new element for a plugin to use.
+       @method requestDiv
+       @param {Number} size=0 Pass a zero for a smaller-width container or a one
+       for a larger container. Other sizes do not exist at this time.
+       @return {jQuery Array} a jQuery array containing a single div
+    */
+    Plugin.prototype.requestDiv = function(size) {
+	if (size === undefined) { size = 0; }
+	if (size == 0) {
+	    return $("<div>").addClass("well well-small")
+		.appendTo("body>.container-fluid>.row-fluid>.span4");
+	} else if (size == 1) {
+	    return $("<div>").addClass("well").appendTo("body>.container-fluid>div>.span8");
+	} else {
+	    return $();
+	}
+    }
 
     plugins.init(svp);
 

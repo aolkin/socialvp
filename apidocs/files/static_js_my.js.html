@@ -50,6 +50,8 @@
             
                 <li><a href="../classes/client.api.plugins.html">client.api.plugins</a></li>
             
+                <li><a href="../classes/client.core.Plugin.html">client.core.Plugin</a></li>
+            
                 <li><a href="../classes/client.core.svp.html">client.core.svp</a></li>
             
                 <li><a href="../classes/client.core.WSChat.html">client.core.WSChat</a></li>
@@ -863,7 +865,15 @@ $(function(){
         $(&quot;#load-video-modal&quot;).modal(&#x27;hide&#x27;);
         svp.ws.onconnected = function(e) {
         svp.joinid = location.hash.substr(6);
-        svp.ws.broadcast({type:&quot;join&quot;,id:svp.joinid}); }
+        if (svp.joinid.substr(0,6) == &quot;plugin&quot;) {
+            parts = svp.joinid.substr(7).split(&quot;:&quot;);
+            plugins.load(&quot;plugins/&quot;+parts[0],function(){
+            svp.ws.broadcast({type:&quot;join&quot;,id:svp.joinid});
+            },function(){console.log(arguments[2].toString());});
+        } else {
+            svp.ws.broadcast({type:&quot;join&quot;,id:svp.joinid});
+        }
+        }
     }
     svp.ws.init(&quot;ws://&quot;+location.host+&quot;/wschat&quot;,name);
     plugins.event(null,arguments);
@@ -874,6 +884,34 @@ $(function(){
     keyboard: false,
     show: true
     }).modal(&#x27;show&#x27;);
+    $(&quot;#load-plugin-modal&quot;).modal({
+    show: false
+    }).on(&quot;show&quot;,function(){
+    $.getJSON(&quot;/pluginlist&quot;,function(data,status) {
+        for (i in data) {
+        if (!document.getElementById(i)) {
+            $(&quot;&lt;button&gt;&quot;).appendTo(&quot;#load-plugin-modal .modal-body&quot;)
+            .addClass(&quot;btn&quot;).text(&#x27;Load &quot;&#x27;+i+&#x27;&quot;&#x27;).prop(&quot;id&quot;,i)
+            .data(&quot;plugin&quot;,data[i]).data(&quot;pname&quot;,i).click(function(e){
+                $(this).prop(&quot;disabled&quot;,&quot;disabled&quot;).text(&quot;Loading...&quot;);
+                plugins.load($(this).data(&quot;plugin&quot;),$.proxy(function(){
+                $(this).prop(&quot;disabled&quot;,&quot;disabled&quot;)
+                    .text(&#x27;Loaded &quot;&#x27;+$(this).data(&quot;pname&quot;)+&#x27;&quot;&#x27;);
+                },this),$.proxy(function(xhr,err,e){
+                console.log(&quot;Plugin loading error:&quot;,err,e);
+                $(this).text(&#x27;Load &quot;&#x27;+$(this).data(&quot;pname&quot;)+&#x27;&quot;&#x27;)
+                    .prop(&quot;disabled&quot;,&quot;&quot;);
+                $(&quot;&lt;div&gt;&quot;).appendTo($(this).parent()).append(
+                    &#x27;&lt;button class=&quot;close&quot; data-dismiss=&quot;alert&quot;&gt;&amp;times;&lt;/button&gt;&#x27;
+                    +&#x27;&lt;strong&gt;Failed to load plugin!&lt;/strong&gt;&#x27;)
+                    .css({position:&quot;absolute&quot;,bottom:0})
+                    .addClass(&quot;alert alert-error&quot;).delay(2000).fadeOut(500);
+                },this));
+            });
+        }
+        }
+    });
+    });
     
     if (location.hash.substr(1,10) == &quot;error:name&quot;) {
     $(&quot;#nickname&quot;).val(localStorage.svpUsername);
@@ -895,6 +933,33 @@ $(function(){
         init(name);
     }
     })
+
+    /**
+       Plugin functionality, as amended by the SVP core. To view the plugin 
+       constructor documentation, please see
+       {{#crossLink &quot;client.api.Plugin&quot;}}here{{/crossLink}}.
+       @class Plugin
+       @extends client.api.Plugin
+    */
+
+    /**
+       Creates a new element for a plugin to use.
+       @method requestDiv
+       @param {Number} size=0 Pass a zero for a smaller-width container or a one
+       for a larger container. Other sizes do not exist at this time.
+       @return {jQuery Array} a jQuery array containing a single div
+    */
+    Plugin.prototype.requestDiv = function(size) {
+    if (size === undefined) { size = 0; }
+    if (size == 0) {
+        return $(&quot;&lt;div&gt;&quot;).addClass(&quot;well well-small&quot;)
+        .appendTo(&quot;body&gt;.container-fluid&gt;.row-fluid&gt;.span4&quot;);
+    } else if (size == 1) {
+        return $(&quot;&lt;div&gt;&quot;).addClass(&quot;well&quot;).appendTo(&quot;body&gt;.container-fluid&gt;div&gt;.span8&quot;);
+    } else {
+        return $();
+    }
+    }
 
     plugins.init(svp);
 

@@ -3,6 +3,10 @@
     margin: 4px;
     float: left;
 }
+.navbar .brand {
+    cursor: default;
+    color: #999 !important;
+}
 
 .blackbg, .blackbg .ui-widget-content .ui-state-default, .blackbg .ui-slider .ui-slider-range {
     background-color: #000000;
