@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>wschat/plugins/webtorrent.py - SocialVideoPlayer API</title>
+    <title>wschat/webtorrent.py - SocialVideoPlayer API</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -105,7 +105,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: wschat/plugins/webtorrent.py</h1>
+                        <h1 class="file-heading">File: wschat/webtorrent.py</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -117,8 +117,8 @@
 */
 &quot;&quot;&quot;
 
-from tornado import websocket
-import sys, json
+from tornado import websocket,web,ioloop
+import sys, json, os, time
 
 wts = {}
 
@@ -178,7 +178,7 @@ class WebTorrentHandler(websocket.WebSocketHandler):
     def on_message(self,message):
         if not self.name:
             self.close()
-        if message[0] == &quot;\0&quot;:
+        if message[0] == 0 or type(message) == bytes:
             &quot;&quot;&quot;
             /**
                 If a message begins with an ASCII NUL (&quot;\0&quot;), it is interpreted
@@ -208,13 +208,17 @@ class WebTorrentHandler(websocket.WebSocketHandler):
                 @param {Bytes} message The sent message
             */
             &quot;&quot;&quot;
+            print(&quot;Data received!&quot;);
+            sys.stdout.flush();
             message = message[1:]
             to = &quot;&quot;
-            while message[0] != &quot;\0&quot;:
-                to += message[0]
+            while message[0] != 0:
+                to += chr(message[0])
                 message = message[1:]
-            print(repr(to))
-            wts[to].write_message(message,True)
+            try:
+                wts[to].write_message(message,True)
+            except KeyError as err:
+                pass
         else:
             &quot;&quot;&quot;
             /**
@@ -239,7 +243,12 @@ class WebTorrentHandler(websocket.WebSocketHandler):
                 @param {String} to The client to send to
             */
             &quot;&quot;&quot;
-            data = json.loads(message)
+            try:
+                data = json.loads(message)
+            except TypeError as err:
+                print(repr(err))
+                print(type(message),&#x27;&quot;&#x27;,message,&#x27;&quot;&#x27;)
+                return False
             data[&quot;from&quot;] = self.name
             if data[&quot;type&quot;] == &quot;tracking&quot;:
                 for name,i in wts.items():
@@ -304,6 +313,52 @@ class WebTorrentHandler(websocket.WebSocketHandler):
         return False
 
 handler = (&#x27;/webtorrent&#x27;,WebTorrentHandler)
+app = web.Application([handler])
+
+def main():
+    pidfn = &quot;wts.pid&quot;
+    if os.path.exists(pidfn):
+        fd = open(pidfn)
+        pid = fd.read()
+        fd.close()
+        os.unlink(pidfn)
+    else:
+        pid = None
+    if &quot;stop&quot; in sys.argv:
+        if pid:
+            print(&quot;Stopping WebTorrent Server...&quot;)
+            os.kill(int(pid),15)
+        exit(0)
+    if pid and os.path.exists(&quot;/proc/{}&quot;.format(pid)):
+            print(&quot;This server is already running! Stopping...&quot;)
+            os.kill(int(pid),15)
+
+
+    print(&quot;Loading WebTorrent Server...&quot;)
+    #print(&quot;\x1b]2;Python Tornado WebSocket Server\x07&quot;)
+
+    print(&quot;WebTorrent Server Root Process PID: {}&quot;.format(os.getpid()))
+
+    try:
+        host, colon, port = sys.argv[1].rpartition(&quot;:&quot;)
+        port = int(port)
+    except IndexError as err:
+        print(&quot;No host/port specified! Must specify at least a port.&quot;)
+        exit(2)
+    except ValueError as err:
+        print(&quot;Invalid Port Argument!&quot;)
+        exit(1)
+
+    fd = open(pidfn,&quot;w&quot;)
+    fd.write(&quot;{}&quot;.format(os.getpid()))
+    fd.close()
+
+    sys.stdout.flush();sys.stderr.flush();
+    app.listen(port,host)
+    ioloop.IOLoop.instance().start()
+
+if __name__ == &quot;__main__&quot;:
+    main()
 
     </pre>
 </div>

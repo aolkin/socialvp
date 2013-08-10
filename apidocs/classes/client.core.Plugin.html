@@ -117,7 +117,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/static_js_my.js.html#l826"><code>static&#x2F;js&#x2F;my.js:826</code></a>
+            Defined in: <a href="../files/static_js_my.js.html#l839"><code>static&#x2F;js&#x2F;my.js:839</code></a>
         </div>
     
 
@@ -256,7 +256,7 @@ constructor documentation, please see
             
         
         
-        <a href="../files/static_js_plugins.js.html#l164"><code>static&#x2F;js&#x2F;plugins.js:164</code></a>
+        <a href="../files/static_js_plugins.js.html#l176"><code>static&#x2F;js&#x2F;plugins.js:176</code></a>
         
         </p>
 
@@ -379,7 +379,7 @@ constructor documentation, please see
             
         
         
-        <a href="../files/static_js_my.js.html#l834"><code>static&#x2F;js&#x2F;my.js:834</code></a>
+        <a href="../files/static_js_my.js.html#l847"><code>static&#x2F;js&#x2F;my.js:847</code></a>
         
         </p>
 
@@ -490,7 +490,7 @@ for a larger container. Other sizes do not exist at this time.</p>
             
         
         
-        <a href="../files/static_js_plugins.js.html#l174"><code>static&#x2F;js&#x2F;plugins.js:174</code></a>
+        <a href="../files/static_js_plugins.js.html#l186"><code>static&#x2F;js&#x2F;plugins.js:186</code></a>
         
         </p>
 
@@ -567,7 +567,7 @@ for a larger container. Other sizes do not exist at this time.</p>
 </div>
 
                 
-                    <div id="method_useFilter" class="method item inherited">
+                    <div id="method_useFilter" class="method item">
     <h3 class="name"><code>useFilter</code></h3>
 
     
@@ -583,6 +583,12 @@ for a larger container. Other sizes do not exist at this time.</p>
                 <li class="arg">
                     
                         <code>callback</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[notOnInit]</code>
                     
                 </li>
             
@@ -610,13 +616,16 @@ for a larger container. Other sizes do not exist at this time.</p>
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/client.api.Plugin.html#method_useFilter">
+                client.api.Plugin
+            </a>
             
-                <p>Inherited from
-                <a href="../classes/client.api.Plugin.html#method_useFilter">client.api.Plugin</a>:
+            but overwritten in
             
         
         
-        <a href="../files/static_js_plugins.js.html#l184"><code>static&#x2F;js&#x2F;plugins.js:184</code></a>
+        <a href="../files/static_js_my.js.html#l865"><code>static&#x2F;js&#x2F;my.js:865</code></a>
         
         </p>
 
@@ -627,7 +636,7 @@ for a larger container. Other sizes do not exist at this time.</p>
     </div>
 
     <div class="description">
-        <p>Registers a string filter with the plugin API.</p>
+        <p>Registers a string filter for chat messages using a regex.</p>
 
     </div>
 
@@ -640,7 +649,7 @@ for a larger container. Other sizes do not exist at this time.</p>
                 <li class="param">
                     
                         <code class="param-name">regex</code>
-                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/RegExp" class="crosslink external" target="_blank">RegExp</a></span>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
                     
 
                     
@@ -663,6 +672,23 @@ for a larger container. Other sizes do not exist at this time.</p>
 
                     <div class="param-description">
                         <p>The method to register. It will be called in the context of the plugin.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[notOnInit]</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>If <code>true</code>, this filter will not be applied to existing messages</p>
 
                     </div>
 

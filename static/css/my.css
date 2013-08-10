@@ -8,6 +8,11 @@
     color: #999 !important;
 }
 
+#load-plugin-modal .modal-body button {
+    display: block;
+    margin: 4px;
+}
+
 .blackbg, .blackbg .ui-widget-content .ui-state-default, .blackbg .ui-slider .ui-slider-range {
     background-color: #000000;
     background-image: none;

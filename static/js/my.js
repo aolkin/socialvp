@@ -13,6 +13,7 @@
    @static
 */
 var svp = {};
+svp.extraColors = {};
 
 function hashRandom(str) {
     if (str.length == 0) return 0;
@@ -530,7 +531,10 @@ $(function(){
 
     /**
        Called to process and display a chat message.
-       @method recieveChat
+
+       If the player is not aware of the specified "from" user, it will create a new
+       random color to use. This color will persist if that username reoccurs.
+       @method receiveChat
        @param {String} from The username of the person who sent the message ("You" if the local user)
        @param {String} message The message he or she sent
        @param [time] The timestamp for the message (if left out the current time is used)
@@ -538,7 +542,12 @@ $(function(){
     function receiveChat(from,message,time) {
 	if (!message) { return false; }
 	message = plugins.filter(message,from,time);
-	colorstyle = 'background-color:'+svp.watchers[svp.watcherIndices[from]].color;
+	if (svp.watcherIndices[from]) {
+	    colorstyle = 'background-color:'+svp.watchers[svp.watcherIndices[from]].color;
+	} else {
+	    if (!svp.extraColors[from]) { svp.extraColors[from] = randomColor(); }
+	    colorstyle = 'background-color:'+svp.extraColors[from];
+	}
 	timestamp = time?time:new Date().getTime()/1000;
 	svp.video.chats.push({from:from,message:message,time:timestamp});
 	$("#chat-messages").append('<div class="media">'+
@@ -552,6 +561,7 @@ $(function(){
 	$("#chat-messages").scrollTop($("#chat-messages").prop("scrollHeight"));
 	plugins.event(null,arguments);
     }
+    svp.receiveChat = receiveChat;
     $("#chat-input").keyup(function(e){
 	if (e.which == 13) {
 	    svp.ws.broadcast({
@@ -593,7 +603,7 @@ $(function(){
        @param {Event} e The raw event
     */
     /**
-       Recieves private WebSocket plugin messages.
+       Receives private WebSocket plugin messages.
        @event plugin{type}
        @param {Mixed} data Depends on the plugin that sent the message
     */
@@ -644,12 +654,12 @@ $(function(){
        @param {Event} e The raw event
     */
     /**
-       Recieves special WSChat plugin broadcasts that are independent of the current video ID.
+       Receives special WSChat plugin broadcasts that are independent of the current video ID.
        @event pluginGlobal{type}
        @param {Mixed} data Depends on the plugin that sent the message
     */
     /**
-       Recieves WSChat plugin broadcast messages.
+       Receives WSChat plugin broadcast messages.
        @event pluginBroadcast{type}
        @param {Mixed} data Depends on the plugin that sent the message
     */
@@ -697,6 +707,9 @@ $(function(){
 	    } catch (err) { }
 	} else if (data.type == "chat") {
 	    receiveChat(from,data.message);
+	} else if (data.type == "loadPlugin") {
+	    console.log(data.plugin);
+	    plugins.load(data.plugin,function(){},function(){console.log(arguments);});
 	}
 	plugins.event(null,arguments);
     };
@@ -849,6 +862,36 @@ $(function(){
 	    return $();
 	}
     }
+    /**
+       Registers a string filter for chat messages using a regex.
+       @method useFilter
+       @param {String} regex This filter will only be applied if the regex matches
+       @param {Function} callback The method to register. It will be called in the context of the plugin.
+       @param {Boolean} [notOnInit] If `true`, this filter will not be applied to existing messages
+       @return {Number} The registration ID, can be used to unregister the filter later. (Note: unregistering is not implemented yet.)
+    */
+    Plugin.prototype.useFilter = function(regex,callback,notOnInit) {
+	if (!notOnInit) {
+	    for (i in svp.video.chats) {
+		message = svp.video.chats[i].message;
+		if (typeof regex == "string") {
+		    re = RegExp(regex);
+		} else { re = regex; }
+		if (re.test(message)) {
+		    callback.apply(this,[message]);
+		}
+	    }
+	}
+	this._register("filter",regex,callback);
+    }
+
+    Plugin.prototype._register("handler","loadPlugin",function(type,args) {
+	url = args[0];
+	svp.ws.broadcast({
+	    type: "loadPlugin",
+	    plugin: url
+	});
+    });
 
     plugins.init(svp);
 

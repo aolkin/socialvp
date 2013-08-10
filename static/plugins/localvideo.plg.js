@@ -58,6 +58,7 @@ new Plugin(
         },
 	urlEditor: function(url) {
 	    name = url.split(":")[0];
+	    if (/https?/.test(name)) { return url; }
 	    console.log("urlEditor",url,name);
 	    if (typeof localvideo.files[name] !== "object") {
 		localvideo.files[name] = true;
