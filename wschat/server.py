@@ -5,7 +5,7 @@ import json, sys, os, time, importlib
 
 plugins = []
 for i in os.listdir("wschat/plugins"):
-    if i.endswith(".py") and i != "__init__.py":
+    if not i.startswith(".") and i.endswith(".py") and i != "__init__.py":
         plugins.append(importlib.import_module("plugins."+i[:-3]))
         try:
             plugins[-1].handler
@@ -47,7 +47,7 @@ class WSHandler(websocket.WebSocketHandler):
         self.write_message(json.dumps({"type":"init","message":"Please identify to recieve messages."}))
 
     def on_message(self,message):
-        sys.stdout.flush();sys.stderr.flush();
+        sys.stdout.flush();sys.stderr.flush()
         obj = json.loads(message)
         if not self.checkattr(obj,"command"): return None
         if obj["command"] == "identify":

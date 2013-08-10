@@ -168,7 +168,7 @@ plugins.filters = {};
 */
 plugins.init = function (it) {
     for (i in plugins.plugins) {
-    plugins.push(new i()); }
+    plugins.push(new plugins.plugins[i]()); }
     plugins.loaded = true;
 };
 
@@ -186,11 +186,9 @@ plugins.event = function(type,args) {
     if (typeof type == &quot;function&quot;) {
     type = type.name; }
     if (plugins.handlers[type]) {
-    console.log(plugins.handlers[type]);
     for (i=0;i&lt;plugins.handlers[type].length;i++) {
         plugins.handlers[type][i](type,args); }
     }
-    console.log(type,args);
 };
 /**
    Core code should call this to allow plugins to filter certain strings.
@@ -202,7 +200,14 @@ plugins.event = function(type,args) {
 */
 plugins.filter = function(message) {
     for (i in plugins.filters) {
-    // Do regex stuff here...
+    if (typeof i == &quot;string&quot;) {
+        regex = RegExp(i);
+    } else { regex = i; }
+    if (regex.test(message)) {
+        for (f=0;f&lt;plugins.filters[i].length;f++) {
+        message = plugins.filters[i][f](message);
+        }
+    }
     }
     return message;
 }
@@ -234,12 +239,18 @@ plugins.editor = function(type,object) {
    @param {Function} error An error callback
    @return {jqXHR} The jQueryXHR object for the AJAX request
 */
-plugins.load = function(url,ready,error) {
+/**
+   Called upon plugin loading attempts.
+   @event loadPlugin
+   @param {String} url The full URL to the plugin.
+*/
+plugins.load = function loadPlugin(url,ready,error) {
     if (url.indexOf(&quot;.js&quot;,url.length-3) === -1) {
     if (url.indexOf(&quot;.plg&quot;,url.length-4) === -1) {
         url = url+&quot;.plg&quot;; }
     url = url + &quot;.js&quot;;
     }
+    plugins.event(&quot;loadPlugin&quot;,[url]);
     return $.ajax({
     url: url,
     dataType: &quot;script&quot;,
@@ -296,7 +307,7 @@ Plugin.prototype = {
     /**
        Registers a string filter with the plugin API.
        @method useFilter
-       @param {RegExp} regex This filter will only be applied if the regex matches
+       @param {String} regex This filter will only be applied if the regex matches
        @param {Function} callback The method to register. It will be called in the context of the plugin.
        @return {Number} The registration ID, can be used to unregister the filter later. (Note: unregistering is not implemented yet.)
     */

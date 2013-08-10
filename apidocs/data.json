@@ -55,11 +55,20 @@
                 "client.core": 1
             }
         },
-        "wschat/plugins/webtorrent.py": {
-            "name": "wschat/plugins/webtorrent.py",
+        "wschat/plugins/.webtorrent.py": {
+            "name": "wschat/plugins/.webtorrent.py",
             "modules": {
                 "webtorrent.py": 1
             },
+            "classes": {},
+            "fors": {},
+            "namespaces": {
+                "protocols": 1
+            }
+        },
+        "wschat/webtorrent.py": {
+            "name": "wschat/webtorrent.py",
+            "modules": {},
             "classes": {
                 "protocols.WebTorrent": 1
             },
@@ -83,7 +92,7 @@
             },
             "tag": "module",
             "file": "static/js/my.js",
-            "line": 826,
+            "line": 839,
             "description": "Social Video Player",
             "author": "Aaron Olkin"
         },
@@ -100,7 +109,7 @@
             },
             "tag": "module",
             "file": "static/js/plugins.js",
-            "line": 141,
+            "line": 152,
             "description": "A reusable and generic plugin API.",
             "author": "Aaron Olkin"
         },
@@ -131,7 +140,7 @@
                 "protocols": 1
             },
             "tag": "module",
-            "file": "wschat/plugins/webtorrent.py",
+            "file": "wschat/webtorrent.py",
             "line": 16,
             "description": "WebTorrent server plugin module"
         }
@@ -163,7 +172,7 @@
             "module": "SVP",
             "namespace": "client.core",
             "file": "static/js/my.js",
-            "line": 826,
+            "line": 839,
             "description": "Plugin functionality, as amended by the SVP core. To view the plugin \nconstructor documentation, please see\n{{#crossLink \"client.api.Plugin\"}}here{{/crossLink}}.",
             "extends": "client.api.Plugin"
         },
@@ -193,7 +202,7 @@
             "module": "PluginAPI",
             "namespace": "client.api",
             "file": "static/js/plugins.js",
-            "line": 141,
+            "line": 152,
             "description": "Sets up a plugin constructor and adds it to the list, initializing it immediately\ndepending on the value of plugins.loaded.\n\nThis page documents the default Plugin object. Core code will usually extend it,\nso you should look at {{#crossLink \"client.core.Plugin\"}}{{/crossLink}} to see\nall of the functionality available to a plugin.",
             "is_constructor": 1,
             "params": [
@@ -234,7 +243,7 @@
             "extension_for": [],
             "module": "webtorrent.py",
             "namespace": "protocols",
-            "file": "wschat/plugins/webtorrent.py",
+            "file": "wschat/webtorrent.py",
             "line": 16,
             "description": "The WebTorrent Protocol Specification and Documentation\n==================================================================\n\n\"Methods\" describe messages sent by clients to the server.\n\"Events\" describe messages received by clients from the server.\n\nA username must be supplied to use the WebTorrent protocol.\nIdentification is accomplished using the \"subprotocol\" feature\nof WebSockets.\n\n*(This protocol is in early alpha and is subject to change)*\n\nHow WebTorrent Works\n------------------------------------------------------------------\nWebTorrent allows files to be transmitted between clients by breaking\nup files and sending individual 2MB (that size is not finalized yet)\nblocks at a time. When a client would like to share a file, it must\nassign it a unique ID no longer than 64 characters (Usually the\nfilename, or a hash of it) and share that ID with the receiving client.\nThe receiving client then sends a tracking request broadcast, and the\ncurrent owner of the file must respond with a \"request\" (oops)\ncontaining more detailed information about the file. The receiving\nclient should then have enough information to begin requesting file\nblocks.\n\nAt any point, a client may send a \"request\" with a file id and block\nnumber to any other client. If that client has that block of that\nfile, it should respond with a binary message to the requesting\nclient containing a 64 character bytestring of the file ID\nfollowed by a two byte unsigned integer specifying the file block,\nand then the actual data of that block. If the client does not have\nthat block, it may ignore the request. It is up to the requesting\nclient to keep track of what blocks it has and what it needs.\n\n<br />\n*The parameters listed below should be supplied to the client side\nJavaScript WebSocket constructor.*",
             "is_constructor": 1,
@@ -261,7 +270,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 65,
+            "line": 66,
             "description": "Called to display the information associated with a given video in the\n\"Load a New Video\" dialog box.",
             "itemtype": "method",
             "name": "updateVideoInfo",
@@ -282,7 +291,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 99,
+            "line": 100,
             "description": "Called when the volume is adjusted using the slider\n(which should be the only way for the volume to change).\n*For Plugin use, see {{#crossLink \"svp/syncVolume:event\"}}here{{/crossLink}}.*",
             "itemtype": "method",
             "name": "syncVolume",
@@ -304,7 +313,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 107,
+            "line": 108,
             "description": "Fired when the volume is adjusted.",
             "itemtype": "event",
             "name": "syncVolume",
@@ -321,7 +330,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 140,
+            "line": 141,
             "description": "Called on video timeupdate, it takes care of updating all the various counters,\ntimelines, etc, as well as broadcasting the update.",
             "itemtype": "method",
             "name": "syncPos",
@@ -338,7 +347,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 226,
+            "line": 227,
             "description": "Handles skip/ff controls.",
             "itemtype": "method",
             "name": "transportClick",
@@ -355,7 +364,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 256,
+            "line": 257,
             "description": "Broadcasts information about a jump.",
             "itemtype": "method",
             "name": "broadcastJump",
@@ -372,7 +381,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 271,
+            "line": 272,
             "description": "Broadcasts information about a state (playing/paused) change.",
             "itemtype": "method",
             "name": "broadcastStateChange",
@@ -382,7 +391,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 343,
+            "line": 344,
             "description": "Called to reset who is being synced to when the local user takes an action.",
             "itemtype": "method",
             "name": "resetSync",
@@ -392,7 +401,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 361,
+            "line": 362,
             "description": "Adds all of the DOM elements and configuration for a new \"watcher\".",
             "itemtype": "method",
             "name": "addWatcher",
@@ -409,7 +418,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 407,
+            "line": 408,
             "description": "Loads a new video into the DOM and resets objects.",
             "itemtype": "method",
             "name": "loadVideo",
@@ -435,7 +444,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 415,
+            "line": 416,
             "description": "Allows editing of the video url before loading it into the video element.",
             "itemtype": "event",
             "name": "videoUrl",
@@ -452,7 +461,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 460,
+            "line": 461,
             "description": "Turns the lights on!",
             "itemtype": "method",
             "name": "lightsOn",
@@ -462,7 +471,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 472,
+            "line": 473,
             "description": "Turns the lights out!",
             "itemtype": "method",
             "name": "lightsOff",
@@ -472,7 +481,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 486,
+            "line": 487,
             "description": "Called when a play/pause event is needed, for whatever reason.",
             "itemtype": "method",
             "name": "stateChange",
@@ -490,7 +499,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 514,
+            "line": 515,
             "description": "Called when the player or a playpause button is clicked.",
             "itemtype": "method",
             "name": "playPause",
@@ -507,10 +516,10 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 531,
-            "description": "Called to process and display a chat message.",
+            "line": 532,
+            "description": "Called to process and display a chat message.\n\nIf the player is not aware of the specified \"from\" user, it will create a new\nrandom color to use. This color will persist if that username reoccurs.",
             "itemtype": "method",
-            "name": "recieveChat",
+            "name": "receiveChat",
             "params": [
                 {
                     "name": "from",
@@ -534,7 +543,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 567,
+            "line": 577,
             "description": "The WSChat instance responsible for transmitting data between clients.",
             "itemtype": "property",
             "name": "ws",
@@ -546,7 +555,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 574,
+            "line": 584,
             "description": "Handles WSChat errors.",
             "itemtype": "method",
             "name": "wsError",
@@ -568,7 +577,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 588,
+            "line": 598,
             "description": "Handles WSChat \"messages\".",
             "itemtype": "method",
             "name": "wsMessage",
@@ -595,8 +604,8 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 595,
-            "description": "Recieves private WebSocket plugin messages.",
+            "line": 605,
+            "description": "Receives private WebSocket plugin messages.",
             "itemtype": "event",
             "name": "plugin",
             "type": "Type",
@@ -613,7 +622,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 639,
+            "line": 649,
             "description": "Handles WSChat \"broadcasts\".",
             "itemtype": "method",
             "name": "wsBroadcast",
@@ -640,8 +649,8 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 646,
-            "description": "Recieves special WSChat plugin broadcasts that are independent of the current video ID.",
+            "line": 656,
+            "description": "Receives special WSChat plugin broadcasts that are independent of the current video ID.",
             "itemtype": "event",
             "name": "pluginGlobal",
             "type": "Type",
@@ -658,8 +667,8 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 651,
-            "description": "Recieves WSChat plugin broadcast messages.",
+            "line": 661,
+            "description": "Receives WSChat plugin broadcast messages.",
             "itemtype": "event",
             "name": "pluginBroadcast",
             "type": "Type",
@@ -676,7 +685,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 703,
+            "line": 716,
             "description": "Handles WSChat quits (when another client disconnects).",
             "itemtype": "method",
             "name": "wsQuit",
@@ -698,7 +707,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 740,
+            "line": 753,
             "description": "Called on initialization of the WSChat client.",
             "itemtype": "event",
             "name": "init",
@@ -715,7 +724,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 745,
+            "line": 758,
             "description": "Initializes the WSChat client.",
             "itemtype": "method",
             "name": "initializeClient",
@@ -732,7 +741,7 @@
         },
         {
             "file": "static/js/my.js",
-            "line": 834,
+            "line": 847,
             "description": "Creates a new element for a plugin to use.",
             "itemtype": "method",
             "name": "requestDiv",
@@ -746,6 +755,38 @@
             "return": {
                 "description": "a jQuery array containing a single div",
                 "type": "JQuery Array"
+            },
+            "class": "client.core.Plugin",
+            "module": "SVP",
+            "namespace": "client.core"
+        },
+        {
+            "file": "static/js/my.js",
+            "line": 865,
+            "description": "Registers a string filter for chat messages using a regex.",
+            "itemtype": "method",
+            "name": "useFilter",
+            "params": [
+                {
+                    "name": "regex",
+                    "description": "This filter will only be applied if the regex matches",
+                    "type": "String"
+                },
+                {
+                    "name": "callback",
+                    "description": "The method to register. It will be called in the context of the plugin.",
+                    "type": "Function"
+                },
+                {
+                    "name": "notOnInit",
+                    "description": "If `true`, this filter will not be applied to existing messages",
+                    "type": "Boolean",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "The registration ID, can be used to unregister the filter later. (Note: unregistering is not implemented yet.)",
+                "type": "Number"
             },
             "class": "client.core.Plugin",
             "module": "SVP",
@@ -854,7 +895,7 @@
         },
         {
             "file": "static/js/plugins.js",
-            "line": 84,
+            "line": 82,
             "description": "Core code should call this to allow plugins to filter certain strings.",
             "itemtype": "method",
             "name": "filter",
@@ -881,7 +922,7 @@
         },
         {
             "file": "static/js/plugins.js",
-            "line": 98,
+            "line": 103,
             "description": "Core code should call this to allow plugins to make changes to arbitrary objects\nor change default behaviors.",
             "itemtype": "method",
             "name": "editor",
@@ -907,7 +948,7 @@
         },
         {
             "file": "static/js/plugins.js",
-            "line": 117,
+            "line": 122,
             "description": "Mostly a wrapper around a jQuery.getScript call, it provides some URL help.",
             "itemtype": "method",
             "name": "load",
@@ -938,7 +979,24 @@
         },
         {
             "file": "static/js/plugins.js",
-            "line": 165,
+            "line": 131,
+            "description": "Called upon plugin loading attempts.",
+            "itemtype": "event",
+            "name": "loadPlugin",
+            "params": [
+                {
+                    "name": "url",
+                    "description": "The full URL to the plugin.",
+                    "type": "String"
+                }
+            ],
+            "class": "client.api.plugins",
+            "module": "PluginAPI",
+            "namespace": "client.api"
+        },
+        {
+            "file": "static/js/plugins.js",
+            "line": 176,
             "description": "Registers a event handler with the plugin API.",
             "itemtype": "method",
             "name": "register",
@@ -964,7 +1022,7 @@
         },
         {
             "file": "static/js/plugins.js",
-            "line": 175,
+            "line": 186,
             "description": "Registers a event handler with the plugin API.",
             "itemtype": "method",
             "name": "useEditor",
@@ -990,7 +1048,7 @@
         },
         {
             "file": "static/js/plugins.js",
-            "line": 185,
+            "line": 196,
             "description": "Registers a string filter with the plugin API.",
             "itemtype": "method",
             "name": "useFilter",
@@ -998,7 +1056,7 @@
                 {
                     "name": "regex",
                     "description": "This filter will only be applied if the regex matches",
-                    "type": "RegExp"
+                    "type": "String"
                 },
                 {
                     "name": "callback",
@@ -1016,7 +1074,7 @@
         },
         {
             "file": "static/js/plugins.js",
-            "line": 199,
+            "line": 210,
             "description": "Creates a new element for a plugin to use.\n*This method is designed to be overwritten by the core code.*",
             "itemtype": "method",
             "name": "requestDiv",
@@ -1332,7 +1390,7 @@
             "namespace": "client.core"
         },
         {
-            "file": "wschat/plugins/webtorrent.py",
+            "file": "wschat/plugins/.webtorrent.py",
             "line": 72,
             "description": "If a message begins with an ASCII NUL (\"\\0\"), it is interpreted\nas a binary message, otherwise it is assumed to be JSON.\n\nIf a client tries to send a message without having identified\nproperly (without specifying a username), they will simply be\ndisconnected.",
             "itemtype": "method",
@@ -1342,7 +1400,7 @@
             "namespace": "protocols"
         },
         {
-            "file": "wschat/plugins/webtorrent.py",
+            "file": "wschat/plugins/.webtorrent.py",
             "line": 81,
             "description": "After the signifying first NUL byte, a binary message should\nspecify the client(s) to forward the message to, terminated\nby another NUL. The entire message after that NUL will then\nbe forwarded directly to the specified clients(s).\n\n*Sending binary messages to multiple clients at once has\nnot been implemented yet.*",
             "itemtype": "method",
@@ -1364,7 +1422,7 @@
             "namespace": "protocols"
         },
         {
-            "file": "wschat/plugins/webtorrent.py",
+            "file": "wschat/plugins/.webtorrent.py",
             "line": 93,
             "description": "When one client sends a binary message, the receiver will\nreceive the exact message, but with no \"from\" information.",
             "itemtype": "event",
@@ -1381,8 +1439,8 @@
             "namespace": "protocols"
         },
         {
-            "file": "wschat/plugins/webtorrent.py",
-            "line": 111,
+            "file": "wschat/plugins/.webtorrent.py",
+            "line": 113,
             "description": "JSON messages can be either fileblock requests or tracking\nbroadcasts.",
             "itemtype": "method",
             "name": "JSON Message",
@@ -1398,8 +1456,8 @@
             "namespace": "protocols"
         },
         {
-            "file": "wschat/plugins/webtorrent.py",
-            "line": 117,
+            "file": "wschat/plugins/.webtorrent.py",
+            "line": 119,
             "description": "A \"tracking\" message will be broadcast to all connected\nclients as is, except a \"from\" parameter will be added to\nspecify the sender.",
             "itemtype": "method",
             "name": "JSON type:tracking",
@@ -1408,8 +1466,8 @@
             "namespace": "protocols"
         },
         {
-            "file": "wschat/plugins/webtorrent.py",
-            "line": 123,
+            "file": "wschat/plugins/.webtorrent.py",
+            "line": 125,
             "description": "A \"request\" message will be forwarded as is to the specified\nclient, with a \"from\" parameter added to specify the sender.\nIf the specified receiver is invalid, a JSON message of type\n\"error\" and error \"badclient\", with a \"message\" attribute\ncontaining the original message, will be sent.",
             "itemtype": "method",
             "name": "JSON type:request",
@@ -1425,8 +1483,8 @@
             "namespace": "protocols"
         },
         {
-            "file": "wschat/plugins/webtorrent.py",
-            "line": 154,
+            "file": "wschat/plugins/.webtorrent.py",
+            "line": 156,
             "description": "If the sent message is the string \"list\", a list of\nconnected clients will be printed to stdout.",
             "itemtype": "method",
             "name": "list",
@@ -1437,8 +1495,8 @@
             "namespace": "protocols"
         },
         {
-            "file": "wschat/plugins/webtorrent.py",
-            "line": 166,
+            "file": "wschat/plugins/.webtorrent.py",
+            "line": 168,
             "description": "When one client disconnects, all other clients receive this\nmessage (for tracking purposes).",
             "itemtype": "event",
             "name": "JSON type:quit",
@@ -1454,8 +1512,141 @@
             "namespace": "protocols"
         },
         {
-            "file": "wschat/plugins/webtorrent.py",
-            "line": 181,
+            "file": "wschat/plugins/.webtorrent.py",
+            "line": 183,
+            "description": "The server will pick the first specified username that is\navailable and return it, allowing the client to determine\nwhat username is in use through the \"protocol\" attribute\nof the JavaScript WebSocket. If none is available, the\nserver will close the connection, although the client is\nfree to try to connect again with the same or different\nusernames.",
+            "itemtype": "property",
+            "name": "WebSocket.protocol",
+            "type": "String",
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/webtorrent.py",
+            "line": 72,
+            "description": "If a message begins with an ASCII NUL (\"\\0\"), it is interpreted\nas a binary message, otherwise it is assumed to be JSON.\n\nIf a client tries to send a message without having identified\nproperly (without specifying a username), they will simply be\ndisconnected.",
+            "itemtype": "method",
+            "name": "Any Message",
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/webtorrent.py",
+            "line": 81,
+            "description": "After the signifying first NUL byte, a binary message should\nspecify the client(s) to forward the message to, terminated\nby another NUL. The entire message after that NUL will then\nbe forwarded directly to the specified clients(s).\n\n*Sending binary messages to multiple clients at once has\nnot been implemented yet.*",
+            "itemtype": "method",
+            "name": "Binary Message",
+            "params": [
+                {
+                    "name": "to",
+                    "description": "The client to send to",
+                    "type": "NUL-terminated String"
+                },
+                {
+                    "name": "message",
+                    "description": "The message to send",
+                    "type": "Bytes"
+                }
+            ],
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/webtorrent.py",
+            "line": 93,
+            "description": "When one client sends a binary message, the receiver will\nreceive the exact message, but with no \"from\" information.",
+            "itemtype": "event",
+            "name": "Binary Message",
+            "params": [
+                {
+                    "name": "message",
+                    "description": "The sent message",
+                    "type": "Bytes"
+                }
+            ],
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/webtorrent.py",
+            "line": 113,
+            "description": "JSON messages can be either fileblock requests or tracking\nbroadcasts.",
+            "itemtype": "method",
+            "name": "JSON Message",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "Either \"tracking\" or \"request\"",
+                    "type": "String"
+                }
+            ],
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/webtorrent.py",
+            "line": 119,
+            "description": "A \"tracking\" message will be broadcast to all connected\nclients as is, except a \"from\" parameter will be added to\nspecify the sender.",
+            "itemtype": "method",
+            "name": "JSON type:tracking",
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/webtorrent.py",
+            "line": 125,
+            "description": "A \"request\" message will be forwarded as is to the specified\nclient, with a \"from\" parameter added to specify the sender.\nIf the specified receiver is invalid, a JSON message of type\n\"error\" and error \"badclient\", with a \"message\" attribute\ncontaining the original message, will be sent.",
+            "itemtype": "method",
+            "name": "JSON type:request",
+            "params": [
+                {
+                    "name": "to",
+                    "description": "The client to send to",
+                    "type": "String"
+                }
+            ],
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/webtorrent.py",
+            "line": 156,
+            "description": "If the sent message is the string \"list\", a list of\nconnected clients will be printed to stdout.",
+            "itemtype": "method",
+            "name": "list",
+            "access": "private",
+            "tagname": "",
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/webtorrent.py",
+            "line": 168,
+            "description": "When one client disconnects, all other clients receive this\nmessage (for tracking purposes).",
+            "itemtype": "event",
+            "name": "JSON type:quit",
+            "params": [
+                {
+                    "name": "who",
+                    "description": "The name of the client that disconnected",
+                    "type": "String"
+                }
+            ],
+            "class": "protocols.WebTorrent",
+            "module": "webtorrent.py",
+            "namespace": "protocols"
+        },
+        {
+            "file": "wschat/webtorrent.py",
+            "line": 183,
             "description": "The server will pick the first specified username that is\navailable and return it, allowing the client to determine\nwhat username is in use through the \"protocol\" attribute\nof the JavaScript WebSocket. If none is available, the\nserver will close the connection, although the client is\nfree to try to connect again with the same or different\nusernames.",
             "itemtype": "property",
             "name": "WebSocket.protocol",

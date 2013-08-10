@@ -124,6 +124,7 @@
    @static
 */
 var svp = {};
+svp.extraColors = {};
 
 function hashRandom(str) {
     if (str.length == 0) return 0;
@@ -641,7 +642,10 @@ $(function(){
 
     /**
        Called to process and display a chat message.
-       @method recieveChat
+
+       If the player is not aware of the specified &quot;from&quot; user, it will create a new
+       random color to use. This color will persist if that username reoccurs.
+       @method receiveChat
        @param {String} from The username of the person who sent the message (&quot;You&quot; if the local user)
        @param {String} message The message he or she sent
        @param [time] The timestamp for the message (if left out the current time is used)
@@ -649,7 +653,12 @@ $(function(){
     function receiveChat(from,message,time) {
     if (!message) { return false; }
     message = plugins.filter(message,from,time);
-    colorstyle = &#x27;background-color:&#x27;+svp.watchers[svp.watcherIndices[from]].color;
+    if (svp.watcherIndices[from]) {
+        colorstyle = &#x27;background-color:&#x27;+svp.watchers[svp.watcherIndices[from]].color;
+    } else {
+        if (!svp.extraColors[from]) { svp.extraColors[from] = randomColor(); }
+        colorstyle = &#x27;background-color:&#x27;+svp.extraColors[from];
+    }
     timestamp = time?time:new Date().getTime()/1000;
     svp.video.chats.push({from:from,message:message,time:timestamp});
     $(&quot;#chat-messages&quot;).append(&#x27;&lt;div class=&quot;media&quot;&gt;&#x27;+
@@ -663,6 +672,7 @@ $(function(){
     $(&quot;#chat-messages&quot;).scrollTop($(&quot;#chat-messages&quot;).prop(&quot;scrollHeight&quot;));
     plugins.event(null,arguments);
     }
+    svp.receiveChat = receiveChat;
     $(&quot;#chat-input&quot;).keyup(function(e){
     if (e.which == 13) {
         svp.ws.broadcast({
@@ -704,7 +714,7 @@ $(function(){
        @param {Event} e The raw event
     */
     /**
-       Recieves private WebSocket plugin messages.
+       Receives private WebSocket plugin messages.
        @event plugin{type}
        @param {Mixed} data Depends on the plugin that sent the message
     */
@@ -755,12 +765,12 @@ $(function(){
        @param {Event} e The raw event
     */
     /**
-       Recieves special WSChat plugin broadcasts that are independent of the current video ID.
+       Receives special WSChat plugin broadcasts that are independent of the current video ID.
        @event pluginGlobal{type}
        @param {Mixed} data Depends on the plugin that sent the message
     */
     /**
-       Recieves WSChat plugin broadcast messages.
+       Receives WSChat plugin broadcast messages.
        @event pluginBroadcast{type}
        @param {Mixed} data Depends on the plugin that sent the message
     */
@@ -808,6 +818,9 @@ $(function(){
         } catch (err) { }
     } else if (data.type == &quot;chat&quot;) {
         receiveChat(from,data.message);
+    } else if (data.type == &quot;loadPlugin&quot;) {
+        console.log(data.plugin);
+        plugins.load(data.plugin,function(){},function(){console.log(arguments);});
     }
     plugins.event(null,arguments);
     };
@@ -960,6 +973,36 @@ $(function(){
         return $();
     }
     }
+    /**
+       Registers a string filter for chat messages using a regex.
+       @method useFilter
+       @param {String} regex This filter will only be applied if the regex matches
+       @param {Function} callback The method to register. It will be called in the context of the plugin.
+       @param {Boolean} [notOnInit] If &#x60;true&#x60;, this filter will not be applied to existing messages
+       @return {Number} The registration ID, can be used to unregister the filter later. (Note: unregistering is not implemented yet.)
+    */
+    Plugin.prototype.useFilter = function(regex,callback,notOnInit) {
+    if (!notOnInit &amp;&amp; svp.video &amp;&amp; svp.video.chats) {
+        for (i in svp.video.chats) {
+        message = svp.video.chats[i].message;
+        if (typeof regex == &quot;string&quot;) {
+            re = RegExp(regex);
+        } else { re = regex; }
+        if (re.test(message)) {
+            callback.apply(this,[message]);
+        }
+        }
+    }
+    this._register(&quot;filter&quot;,regex,callback);
+    }
+
+    Plugin.prototype._register(&quot;handler&quot;,&quot;loadPlugin&quot;,function(type,args) {
+    url = args[0];
+    svp.ws.broadcast({
+        type: &quot;loadPlugin&quot;,
+        plugin: url
+    });
+    });
 
     plugins.init(svp);
 

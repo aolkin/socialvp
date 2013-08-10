@@ -51,11 +51,14 @@ new Plugin(
             this.input = $("<div>").css({padding:"1em 0",fontSize:"1.8em",lineHeight:"1em",
                                          textAlign:"center",borderRadius:4})
                 .text("Drag a video here to play and share...").appendTo(this.container);
+	    progbar = $('<div>').addClass("progress").appendTo(this.container);
+	    this.progbar = $("<div>").addClass("bar").appendTo(progbar);
             this.processDragElement(this.input);
             this.loadWorker();
         },
 	urlEditor: function(url) {
 	    name = url.split(":")[0];
+	    if (/https?/.test(name)) { return url; }
 	    console.log("urlEditor",url,name);
 	    if (typeof localvideo.files[name] !== "object") {
 		localvideo.files[name] = true;
@@ -126,9 +129,31 @@ new Plugin(
 		    svp.loadVideo(url,"plugin=localvideo:"+hashRandom(url).toString(36));
 		} else if (type == "fileinfo") {
 		    svp.player.src = e.data.bloburl;
+		} else if (type == "progress") {
+		    this.progbar.css({width:(e.data.percentage*100)+"%",opacity:1})
+			.text(this.progressTexts[e.data.step])
+			.parent().addClass("progress-striped active")
+			.removeClass("progress-info progress-danger progress-warning")
+			.addClass(this.progressClasses[e.data.step]);
+		    if (e.data.percentage == 1) {
+			this.progbar.css("opacity",0.5);
+			this.progbar.parent().removeClass("progress-striped active");
+			if (e.data.step == "download") {
+			    svp.player.load(); svp.player.play(); }
+		    }
 		}
 	    }
             console.log("Worker Message:",e.data);
-        }
+        },
+	progressTexts: {
+	    preparation: "Allocating File...",
+	    download: "Receiving File...",
+	    filecopy: "Copying File..."
+	},
+	progressClasses: {
+	    preparation: "progress-danger",
+	    download: "progress-warning",
+	    filecopy: "progress-info"
+	}
     }
 );
