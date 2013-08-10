@@ -3,8 +3,6 @@
 
 static/url-json/*.json
 
-/docs.sh
-
 # Emacs ignores
 *~
 \#*\#

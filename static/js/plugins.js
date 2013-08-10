@@ -160,14 +160,18 @@ plugins.load = function loadPlugin(url,ready,error) {
    @constructor
    @param {Function} func The plugin constructor
    @param {Object} proto The plugin prototype
+   @param {Boolean} [dontInitialize] If true, the plugin will be returned instead of
+       being added to the plugin registry and initialized.
 */
-Plugin = function (func,proto) {
+Plugin = function (func,proto,dontInitialize) {
     id = func.name;
     if (plugins.plugins[id]) { return false; }
     for (i in proto) {
 	this[i] = proto[i];
     }
     func.prototype = this;
+    if (dontInitialize) {
+	return func; }
     plugins.plugins[id] = func;
     if (plugins.loaded) {
 	plugins.push(new func()); }
