@@ -167,7 +167,7 @@
 }
 .media-body {
     font-size: 0.9em;
-    overflow: auto;
+    word-wrap: break-word;
     border-top: 1px solid rgba(100, 100, 100, 0.5);
     padding-top: 4px;
 }
