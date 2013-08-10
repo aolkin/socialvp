@@ -871,7 +871,7 @@ $(function(){
        @return {Number} The registration ID, can be used to unregister the filter later. (Note: unregistering is not implemented yet.)
     */
     Plugin.prototype.useFilter = function(regex,callback,notOnInit) {
-	if (!notOnInit) {
+	if (!notOnInit && svp.video && svp.video.chats) {
 	    for (i in svp.video.chats) {
 		message = svp.video.chats[i].message;
 		if (typeof regex == "string") {

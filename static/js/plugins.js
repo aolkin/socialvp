@@ -57,7 +57,7 @@ plugins.filters = {};
 */
 plugins.init = function (it) {
     for (i in plugins.plugins) {
-	plugins.push(new i()); }
+	plugins.push(new plugins.plugins[i]()); }
     plugins.loaded = true;
 };
 
