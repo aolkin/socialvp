@@ -75,11 +75,10 @@ plugins.event = function(type,args) {
     if (typeof type == "function") {
 	type = type.name; }
     if (plugins.handlers[type]) {
-	console.log(plugins.handlers[type]);
 	for (i=0;i<plugins.handlers[type].length;i++) {
 	    plugins.handlers[type][i](type,args); }
     }
-    console.log(type,args);
+    //console.log(type,args);
 };
 /**
    Core code should call this to allow plugins to filter certain strings.

@@ -92,7 +92,7 @@
     opacity: 0.3;
 }
 
-.progress.progress-warning {
+#info .progress.progress-warning {
     margin-top: -2.85em;
 }
 #slider-view {

@@ -6,8 +6,8 @@
 */
 """
 
-from tornado import websocket
-import sys, json
+from tornado import websocket,web,ioloop
+import sys, json, os, time
 
 wts = {}
 
@@ -97,6 +97,8 @@ class WebTorrentHandler(websocket.WebSocketHandler):
                 @param {Bytes} message The sent message
             */
             """
+            print("Data received!");
+            sys.stdout.flush();
             message = message[1:]
             to = ""
             while message[0] != 0:
@@ -200,3 +202,49 @@ class WebTorrentHandler(websocket.WebSocketHandler):
         return False
 
 handler = ('/webtorrent',WebTorrentHandler)
+app = web.Application([handler])
+
+def main():
+    pidfn = "wts.pid"
+    if os.path.exists(pidfn):
+        fd = open(pidfn)
+        pid = fd.read()
+        fd.close()
+        os.unlink(pidfn)
+    else:
+        pid = None
+    if "stop" in sys.argv:
+        if pid:
+            print("Stopping WebTorrent Server...")
+            os.kill(int(pid),15)
+        exit(0)
+    if pid and os.path.exists("/proc/{}".format(pid)):
+            print("This server is already running! Stopping...")
+            os.kill(int(pid),15)
+
+
+    print("Loading WebTorrent Server...")
+    #print("\x1b]2;Python Tornado WebSocket Server\x07")
+
+    print("WebTorrent Server Root Process PID: {}".format(os.getpid()))
+
+    try:
+        host, colon, port = sys.argv[1].rpartition(":")
+        port = int(port)
+    except IndexError as err:
+        print("No host/port specified! Must specify at least a port.")
+        exit(2)
+    except ValueError as err:
+        print("Invalid Port Argument!")
+        exit(1)
+
+    fd = open(pidfn,"w")
+    fd.write("{}".format(os.getpid()))
+    fd.close()
+
+    sys.stdout.flush();sys.stderr.flush();
+    app.listen(port,host)
+    ioloop.IOLoop.instance().start()
+
+if __name__ == "__main__":
+    main()
