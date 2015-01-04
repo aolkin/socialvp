@@ -613,7 +613,7 @@ $(function(){
 	} else if (data.type == "info") {
 	    processChats = false;
 	    if (!svp.video || svp.video.url !== data.url) {
-		svp.player.addEventListener("canplay",function() {
+		$(svp.player).one("canplay",function() {
 		    console.log("Canplay");
 		    svp.player.currentTime = data.mypos; });
 		svp.loadVideo(data.url,svp.joinid);
