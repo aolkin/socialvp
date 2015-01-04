@@ -215,6 +215,12 @@
                     "name": "proto",
                     "description": "The plugin prototype",
                     "type": "Object"
+                },
+                {
+                    "name": "dontInitialize",
+                    "description": "If true, the plugin will be returned instead of\n    being added to the plugin registry and initialized.",
+                    "type": "Boolean",
+                    "optional": true
                 }
             ]
         },
@@ -996,7 +1002,7 @@
         },
         {
             "file": "static/js/plugins.js",
-            "line": 176,
+            "line": 180,
             "description": "Registers a event handler with the plugin API.",
             "itemtype": "method",
             "name": "register",
@@ -1022,7 +1028,7 @@
         },
         {
             "file": "static/js/plugins.js",
-            "line": 186,
+            "line": 190,
             "description": "Registers a event handler with the plugin API.",
             "itemtype": "method",
             "name": "useEditor",
@@ -1048,7 +1054,7 @@
         },
         {
             "file": "static/js/plugins.js",
-            "line": 196,
+            "line": 200,
             "description": "Registers a string filter with the plugin API.",
             "itemtype": "method",
             "name": "useFilter",
@@ -1074,7 +1080,7 @@
         },
         {
             "file": "static/js/plugins.js",
-            "line": 210,
+            "line": 214,
             "description": "Creates a new element for a plugin to use.\n*This method is designed to be overwritten by the core code.*",
             "itemtype": "method",
             "name": "requestDiv",
