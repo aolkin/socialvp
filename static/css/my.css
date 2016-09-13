@@ -145,7 +145,7 @@
     box-shadow: 0 0 7px rgba(255, 255, 255, 0.3);
 }
 #chat-messages {
-    height: 16em;
+    height: 20em;
 }
 #chat-input {
     width: 98%;

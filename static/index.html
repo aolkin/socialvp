@@ -18,7 +18,6 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
           </button>
 	  <img src="img/logo.png" />
           <a class="brand">Social Video Player</a>
@@ -26,7 +25,7 @@
             <ul class="nav">
               <li><a href="/" onclick="localStorage.removeItem('svpUsername')">
 		  Reset Name <i class="icon-user icon-white"></i></a></li>
-              <li><a href="#load-plugin-modal" data-toggle="modal">Load Plugins
+              <li style="display: none"><a href="#load-plugin-modal" data-toggle="modal">Load Plugins
 		  <i class="icon-tasks icon-white"></i></a></li>
               <li><a href="#load-video-modal" data-toggle="modal">Load New Video
 		  <i class="icon-film icon-white"></i></a></li>
@@ -89,14 +88,14 @@
 	  </div>
 	</div>
 	<div class="span4">
-	  <ul id="watchers" class="unstyled well">
-	    <h4>Viewers <span class="badge badge-info">0</span></h4>
-	  </ul>
 	  <div class="well well-small" id="chat-frame">
 	    <h4>Chat</h4>
 	    <div id="chat-messages" class="modal-body"></div>
 	    <input type="text" id="chat-input" />
 	  </div>
+	  <ul id="watchers" class="unstyled well">
+	    <h4>Viewers <span class="badge badge-info">0</span></h4>
+	  </ul>
 	</div>
       </div>
     </div>

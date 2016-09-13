@@ -1,6 +1,6 @@
 /**
    Social Video Player
-   
+
    @author Aaron Olkin
 
    @module SVP
@@ -37,6 +37,7 @@ function complementHex(hex_color) {
 }
 
 function hhmmss(seconds,frac) {
+    var frac = false;
     return moment.unix(seconds-68400).format("HH:mm:ss"+(frac?".S":""))
 }
 
@@ -145,7 +146,9 @@ $(function(){
        @param {Event} e The event object
     */
     function syncPos(e) {
-	svp.watchers[0].pos = Math.round(svp.player.currentTime*10)/10;
+        var oldpos = svp.watchers[0].pos;
+	svp.watchers[0].pos = Math.round(svp.player.currentTime);
+        if (svp.watchers[0].pos === oldpos) { return }
 	$(".watcher:first-of-type .time").text(hhmmss(svp.watchers[0].pos,true));
 	$("#global-pos").css("width",(svp.player.currentTime/svp.player.duration*100)+"%");
 	texts = [hhmmss(svp.player.currentTime),
@@ -193,7 +196,7 @@ $(function(){
 	}
 	$("#timeline").slider("option","values",pos);
     }
-    
+
     function doubleRate(el) {
 	if (Math.abs(svp.player.playbackRate) < 8) {
 	    svp.player.playbackRate *= 2;
@@ -377,6 +380,9 @@ $(function(){
 	  '<span class="caret"></span></button><ul class="dropdown-menu">'+
 	  '<li><a href="#" class="watcher-hide">Darken</a></li>'+
           '</ul></div></div></li>').appendTo("#watchers");
+	if (!svp.lightsAreOn) {
+            svp.lightsOff();
+        }
 	$("a.watcher-hide").eq(index).click(function(e) {
 	    e.preventDefault();
 	    index = $(this).data("watcher-index");
@@ -404,7 +410,7 @@ $(function(){
 	plugins.event(null,arguments);
     }
     svp.addWatcher = addWatcher;
-    
+
     /**
        Loads a new video into the DOM and resets objects.
        @method loadVideo
@@ -428,10 +434,12 @@ $(function(){
 	    $("#volume").show()
 		.position({"my":"center bottom","at":"center","of":$("#volume").prev()}).hide();
 	} catch (err) {}
+        svp.hosting = id?true:false;
 	svp.video = video;
 	svp.watchers = [];
 	svp.watcherIndices = {};
 	$("#link").val(location.origin+"/#join:"+svp.video.id);
+        location.assign("#join:"+svp.video.id);
 	$(".watcher").remove()
 	$("#player").attr("src",plugins.editor("videoUrl",svp.video.url)).attr("poster","");
 	svp.player.load();
@@ -449,7 +457,7 @@ $(function(){
     $("#load-video-modal .modal-footer .btn-info").click(function(e) {
 	if (!svp.loadVideo($("#video-url").val())) {
 	    e.preventDefault();
-	} else { location.assign("#"); }
+	}
     });
 
     blackbg = "body, .well, .progress, #chat-frame, #chat-entry, #current-url a";
@@ -541,7 +549,9 @@ $(function(){
      */
     function receiveChat(from,message,time) {
 	if (!message) { return false; }
+        var originalmsg = message;
 	message = plugins.filter(message,from,time);
+        console.log(message, originalmsg);
 	if (svp.watcherIndices[from]) {
 	    colorstyle = 'background-color:'+svp.watchers[svp.watcherIndices[from]].color;
 	} else {
@@ -549,7 +559,7 @@ $(function(){
 	    colorstyle = 'background-color:'+svp.extraColors[from];
 	}
 	timestamp = time?time:new Date().getTime()/1000;
-	svp.video.chats.push({from:from,message:message,time:timestamp});
+	svp.video.chats.push({from:from,message:originalmsg,time:timestamp});
 	$("#chat-messages").append('<div class="media">'+
 				   '<a class="pull-left chat-icon" style="'+colorstyle+'"></a>'+
 				   '<div class="media-body">'+
@@ -598,7 +608,7 @@ $(function(){
     /**
        Handles WSChat "messages".
        @method wsMessage
-       @param {Object} data The message data 
+       @param {Object} data The message data
        @param {String} from The user who sent the message
        @param {Event} e The raw event
     */
@@ -649,7 +659,7 @@ $(function(){
     /**
        Handles WSChat "broadcasts".
        @method wsBroadcast
-       @param {Object} data The message data 
+       @param {Object} data The message data
        @param {String} from The user who sent the message
        @param {Event} e The raw event
     */
@@ -738,7 +748,7 @@ $(function(){
 	$(".watcher").eq(index).remove();
 	rebuildTimeline();
 	plugins.event(null,arguments);
-    }    
+    }
 
     function watcherExists(name) {
 	for (i in svp.watchers) {
@@ -814,7 +824,7 @@ $(function(){
 	    }
 	});
     });
-    
+
     if (location.hash.substr(1,10) == "error:name") {
 	$("#nickname").val(localStorage.svpUsername);
 	textel = $("#set-name-modal .alert-error").removeClass("hide").children("span");
@@ -837,7 +847,7 @@ $(function(){
     })
 
     /**
-       Plugin functionality, as amended by the SVP core. To view the plugin 
+       Plugin functionality, as amended by the SVP core. To view the plugin
        constructor documentation, please see
        {{#crossLink "client.api.Plugin"}}here{{/crossLink}}.
        @class Plugin

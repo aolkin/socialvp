@@ -3,7 +3,6 @@ new Plugin(
 	this.useFilter("\\w+\\.\\w{2,4}",this.filter,true);
     }, {
 	filter: function(message) {
-	    console.log(message);
 	    part = message;
 	    message = ""
 	    while (part) {
